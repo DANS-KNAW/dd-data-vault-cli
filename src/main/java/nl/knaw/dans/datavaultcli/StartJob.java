@@ -13,31 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavault.cli;
+package nl.knaw.dans.datavaultcli;
 
-import picocli.CommandLine;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
+import picocli.CommandLine.*;
 import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "data-vault",
-         subcommands = { StartJob.class },
+@Command(name = "start-job",
          mixinStandardHelpOptions = true,
-         versionProvider = VersionProvider.class,
-         description = "Manage a Data Vault.")
-public class DataVault implements Callable<Integer> {
+         description = "Start a job.")
+
+@RequiredArgsConstructor
+public class StartJob implements Callable<Integer> {
+    @NonNull
+    private final DataVaultConfiguration configuration;
+    @Parameters(index = "0",
+                paramLabel = "batch-dir",
+                description = "The path to the batch directory to process.")
+    private String batchDir;
 
     @Override
     public Integer call() throws Exception {
+        System.out.println(configuration.getDataVaultService().getHttpClient());
+
+
         return 0;
-    }
-
-    public static void main(String[] args) {
-        int exitCode = new CommandLine(new DataVault()).execute(args);
-        System.exit(exitCode);
-    }
-
-    public static String getVersion() {
-        return DataVault.class.getPackage().getImplementationVersion();
     }
 }

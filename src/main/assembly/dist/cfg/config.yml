@@ -1,0 +1,7 @@
+vaultService:
+  url: http://localhost:20365/
+  httpClient:
+    timeout: 30s
+    connectionTimeout: 15s
+    timeToLive: 1h
+    retries: 2

@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavault.cli;
+package nl.knaw.dans.datavaultcli.config;
 
-import picocli.CommandLine.*;
-import picocli.CommandLine.Command;
+import io.dropwizard.client.JerseyClientConfiguration;
+import lombok.Data;
 
-import java.util.concurrent.Callable;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.net.URI;
 
-@Command(name = "start-job",
-         mixinStandardHelpOptions = true,
-         description = "Start a job.")
-public class StartJob implements Callable<Integer> {
-    @Parameters(index = "0",
-                paramLabel = "batch-dir",
-                description = "The path to the batch directory to process.")
-    private String batchDir;
+@Data
+public class DataVaultService {
+    @Valid
+    @NotNull
+    private URI url;
 
-    @Override
-    public Integer call() throws Exception {
-        return 0;
-    }
+    private JerseyClientConfiguration httpClient = new JerseyClientConfiguration();
+
 }
