@@ -17,12 +17,15 @@ package nl.knaw.dans.datavaultcli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
 import lombok.AllArgsConstructor;
+import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import picocli.CommandLine;
@@ -43,20 +46,36 @@ public class DataVault implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        // Create a client
-        DefaultApi api = new DefaultApi();
+        // The base command does nothing, it only serves as a container for subcommands.
         return 0;
     }
 
     public static void main(String[] args) throws IOException, ConfigurationException {
+        File configFile = new File(System.getProperty("dans.default.config"));
+        DataVaultConfiguration config = loadConfiguration(configFile);
+        DefaultApi api = createDefaultApi(config);
+
+        var commandLine = new CommandLine(new DataVault(config));
+        commandLine.addSubcommand(new StartJob(config, api));
+        int exitCode = commandLine.execute(args);
+        System.exit(exitCode);
+    }
+
+    private static DefaultApi createDefaultApi(DataVaultConfiguration configuration) {
+        var client = new JerseyClientBuilder(new Environment(DataVault.class.getName()))
+            .using(configuration.getDataVaultService().getHttpClient())
+            .build(DataVault.class.getName() + " client");
+        var apiClient = new ApiClient();
+        // End-slashes trip up the API client, so we remove them from the base path.
+        apiClient.setBasePath(configuration.getDataVaultService().getUrl().toString().replaceAll("/+$", ""));
+        apiClient.setHttpClient(client);
+        return new DefaultApi(apiClient);
+    }
+
+    private static DataVaultConfiguration loadConfiguration(File configFile) throws IOException, ConfigurationException {
         ObjectMapper objectMapper = Jackson.newObjectMapper(new YAMLFactory());
         Validator validator = Validators.newValidator();
         ConfigurationFactory<DataVaultConfiguration> factory = new YamlConfigurationFactory<>(DataVaultConfiguration.class, validator, objectMapper, "dw");
-        File configFile = new File(System.getProperty("dans.default.config"));
-        DataVaultConfiguration config = factory.build(configFile);
-        var commandLine = new CommandLine(new DataVault(config));
-        commandLine.addSubcommand(new StartJob(config));
-        int exitCode = commandLine.execute(args);
-        System.exit(exitCode);
+        return factory.build(configFile);
     }
 }

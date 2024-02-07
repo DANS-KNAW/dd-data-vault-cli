@@ -28,6 +28,7 @@ public class DataVaultService {
     @NotNull
     private URI url;
 
-    private JerseyClientConfiguration httpClient = new JerseyClientConfiguration();
+    @NotNull
+    private JerseyClientConfiguration httpClient;
 
 }

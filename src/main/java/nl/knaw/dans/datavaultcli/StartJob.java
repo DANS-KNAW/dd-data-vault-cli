@@ -15,13 +15,15 @@
  */
 package nl.knaw.dans.datavaultcli;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.api.JobDto;
+import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
-import picocli.CommandLine.*;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 @Command(name = "start-job",
@@ -32,6 +34,10 @@ import java.util.concurrent.Callable;
 public class StartJob implements Callable<Integer> {
     @NonNull
     private final DataVaultConfiguration configuration;
+
+    @NonNull
+    private final DefaultApi api;
+
     @Parameters(index = "0",
                 paramLabel = "batch-dir",
                 description = "The path to the batch directory to process.")
@@ -39,9 +45,7 @@ public class StartJob implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        System.out.println(configuration.getDataVaultService().getHttpClient());
-
-
+        api.jobsPost(new JobDto().batch(batchDir));
         return 0;
     }
 }
