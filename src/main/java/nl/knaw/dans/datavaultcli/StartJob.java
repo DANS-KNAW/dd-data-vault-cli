@@ -18,12 +18,14 @@ package nl.knaw.dans.datavaultcli;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.api.JobDto;
+import nl.knaw.dans.datavaultcli.client.ApiException;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import java.util.UUID;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(name = "start-job",
@@ -44,8 +46,15 @@ public class StartJob implements Callable<Integer> {
     private String batchDir;
 
     @Override
-    public Integer call() throws Exception {
-        api.jobsPost(new JobDto().batch(batchDir));
-        return 0;
+    public Integer call() {
+        try {
+            Path batchDir = Paths.get(this.batchDir);
+            api.jobsPost(new JobDto().batch(batchDir.toAbsolutePath().toString()));
+            return 0;
+        }
+        catch (ApiException e) {
+            System.out.println("Error: " + e.getMessage());
+            return 1;
+        }
     }
 }
