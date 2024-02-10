@@ -55,7 +55,9 @@ public class Main implements Callable<Integer> {
 
         var main = new CommandLine(new Main())
             .addSubcommand(new CommandLine(new Import())
-                .addSubcommand(new ImportStart(api)));
+                .addSubcommand(new ImportStart(api))
+                .addSubcommand(new ImportStatus(api)));
+
         int exitCode = main.execute(args);
         System.exit(exitCode);
     }
