@@ -42,8 +42,6 @@ import java.util.concurrent.Callable;
          description = "Manage a Data Vault.")
 @AllArgsConstructor
 public class Main implements Callable<Integer> {
-    private final DataVaultConfiguration configuration;
-
     @Override
     public Integer call() throws Exception {
         // The base command does nothing, it only serves as a container for subcommands.
@@ -55,9 +53,9 @@ public class Main implements Callable<Integer> {
         DataVaultConfiguration config = loadConfiguration(configFile);
         DefaultApi api = createDefaultApi(config);
 
-        var main = new CommandLine(new Main(config))
+        var main = new CommandLine(new Main())
             .addSubcommand(new CommandLine(new Import())
-                .addSubcommand(new ImportStart(config, api)));
+                .addSubcommand(new ImportStart(api)));
         int exitCode = main.execute(args);
         System.exit(exitCode);
     }

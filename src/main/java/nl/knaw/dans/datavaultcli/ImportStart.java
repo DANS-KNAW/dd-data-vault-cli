@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.api.ImportCommandDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
-import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -36,9 +35,6 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 public class ImportStart implements Callable<Integer> {
     @NonNull
-    private final DataVaultConfiguration configuration;
-
-    @NonNull
     private final DefaultApi api;
 
     @Parameters(index = "0",
@@ -47,7 +43,6 @@ public class ImportStart implements Callable<Integer> {
     private String path;
 
     @Option(names = { "-s", "--single-object" },
-            usageHelp = true,
             description = "The path parameter points to a single object import directory (by default path points to a batch directory).")
     private boolean singleObject;
 
