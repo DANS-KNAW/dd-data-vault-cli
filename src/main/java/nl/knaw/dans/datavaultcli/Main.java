@@ -41,7 +41,7 @@ import java.util.concurrent.Callable;
          versionProvider = VersionProvider.class,
          description = "Manage a Data Vault.")
 @AllArgsConstructor
-public class DataVault implements Callable<Integer> {
+public class Main implements Callable<Integer> {
     private final DataVaultConfiguration configuration;
 
     @Override
@@ -55,16 +55,17 @@ public class DataVault implements Callable<Integer> {
         DataVaultConfiguration config = loadConfiguration(configFile);
         DefaultApi api = createDefaultApi(config);
 
-        var commandLine = new CommandLine(new DataVault(config));
-        commandLine.addSubcommand(new StartJob(config, api));
-        int exitCode = commandLine.execute(args);
+        var main = new CommandLine(new Main(config))
+            .addSubcommand(new CommandLine(new Import())
+                .addSubcommand(new ImportStart(config, api)));
+        int exitCode = main.execute(args);
         System.exit(exitCode);
     }
 
     private static DefaultApi createDefaultApi(DataVaultConfiguration configuration) {
-        var client = new JerseyClientBuilder(new Environment(DataVault.class.getName()))
+        var client = new JerseyClientBuilder(new Environment(Main.class.getName()))
             .using(configuration.getDataVaultService().getHttpClient())
-            .build(DataVault.class.getName() + " client");
+            .build(Main.class.getName() + " client");
         var apiClient = new ApiClient();
         // End-slashes trip up the API client, so we remove them from the base path.
         apiClient.setBasePath(configuration.getDataVaultService().getUrl().toString().replaceAll("/+$", ""));

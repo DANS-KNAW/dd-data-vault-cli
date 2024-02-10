@@ -17,23 +17,24 @@ package nl.knaw.dans.datavaultcli;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import nl.knaw.dans.datavaultcli.api.JobDto;
+import nl.knaw.dans.datavaultcli.api.ImportCommandDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-@Command(name = "start-job",
+@Command(name = "start",
          mixinStandardHelpOptions = true,
          description = "Start a job.")
 
 @RequiredArgsConstructor
-public class StartJob implements Callable<Integer> {
+public class ImportStart implements Callable<Integer> {
     @NonNull
     private final DataVaultConfiguration configuration;
 
@@ -41,19 +42,26 @@ public class StartJob implements Callable<Integer> {
     private final DefaultApi api;
 
     @Parameters(index = "0",
-                paramLabel = "batch-dir",
-                description = "The path to the batch directory to process.")
-    private String batchDir;
+                paramLabel = "path",
+                description = "The path to the object or batch of objects to import.")
+    private String path;
+
+    @Option(names = { "-s", "--single-object" },
+            usageHelp = true,
+            description = "The path parameter points to a single object import directory (by default path points to a batch directory).")
+    private boolean singleObject;
 
     @Override
     public Integer call() {
         try {
-            Path batchDir = Paths.get(this.batchDir);
-            api.jobsPost(new JobDto().batch(batchDir.toAbsolutePath().toString()));
+            Path batchDir = Paths.get(this.path);
+            api.importsPost(new ImportCommandDto()
+                .path(Path.of(batchDir.toString()).toAbsolutePath().toString())
+                .singleObject(singleObject));
             return 0;
         }
         catch (ApiException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             return 1;
         }
     }
