@@ -17,35 +17,26 @@ package nl.knaw.dans.datavaultcli;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
 
-import java.util.UUID;
 import java.util.concurrent.Callable;
 
-@Command(name = "status",
+@AllArgsConstructor
+@Command(name = "new",
          mixinStandardHelpOptions = true,
-         description = "Get the status of a job.")
-@RequiredArgsConstructor
-public class ImportStatus implements Callable<Integer> {
-    @NonNull
+         description = "Create a new top layer. The old top layer will be scheduled for archiving.")
+public class LayerNew implements Callable<Integer> {
     private final DefaultApi api;
-
-    @Parameters(index = "0",
-                paramLabel = "id",
-                description = "The id of the job.")
-    private UUID id;
 
     @Override
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var importJob = api.importsIdGet(id);
-            System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
+            var layerStatusDto = api.layersPost();
+            System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(layerStatusDto));
             return 0;
         }
         catch (ApiException | JsonProcessingException e) {
@@ -53,4 +44,5 @@ public class ImportStatus implements Callable<Integer> {
             return 1;
         }
     }
+
 }
