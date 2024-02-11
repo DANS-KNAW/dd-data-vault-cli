@@ -15,19 +15,27 @@
  */
 package nl.knaw.dans.datavaultcli;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
+import org.slf4j.LoggerFactory;
+import picocli.AutoComplete;
+import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -36,11 +44,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-@Command(name = "data-vault",
+@Command(name = "dd-data-vault-cli",
          mixinStandardHelpOptions = true,
          versionProvider = VersionProvider.class,
          description = "Manage a Data Vault.")
 @AllArgsConstructor
+@Slf4j
 public class Main implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
@@ -49,16 +58,21 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) throws IOException, ConfigurationException {
+        // Prevent Dropwizard from logging to the console, before we have a chance to configure it.
+        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.OFF);
         File configFile = new File(System.getProperty("dans.default.config"));
         DataVaultConfiguration config = loadConfiguration(configFile);
+        var metricRegistry = new MetricRegistry();
+        config.getLoggingFactory().configure(metricRegistry, "dd-data-vault-cli");
         DefaultApi api = createDefaultApi(config);
-
         var main = new CommandLine(new Main())
             .addSubcommand(new CommandLine(new Import())
                 .addSubcommand(new ImportStart(api))
                 .addSubcommand(new ImportStatus(api)))
             .addSubcommand(new CommandLine(new Layer())
-                .addSubcommand(new LayerNew(api)));
+                .addSubcommand(new LayerNew(api)))
+            .addSubcommand(new GenerateCompletion());
 
         int exitCode = main.execute(args);
         System.exit(exitCode);

@@ -195,4 +195,95 @@
             <url>https://maven.dans.knaw.nl/snapshots/</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>rpm</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <file>
+                    <exists>/usr/local/bin/rpm</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <group>Applications/Archiving</group>
+                            <mappings combine.children="override">
+                                <!-- Contents of ${app.home}/lib -->
+                                <mapping>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/lib</directory>
+                                    <dependency>
+                                        <stripVersion>false</stripVersion>
+                                    </dependency>
+                                </mapping>
+                                <!-- Read-only contents of ${app.home}/bin  -->
+                                <mapping>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/bin</directory>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/${project.artifactId}-${project.version}.jar</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <!-- Executable contents of ${app.home}/bin -->
+                                <mapping>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/bin</directory>
+                                    <filemode>755</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>src/main/assembly/dist/bin/${project.artifactId}</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <!-- Contents of cfg dir under /etc/opt ... -->
+                                <mapping>
+                                    <directory>/etc/opt/${dans-provider-name}/${project.artifactId}</directory>
+                                    <configuration>${rpm-replace-configuration}</configuration>
+                                    <sources>
+                                        <source>
+                                            <location>src/main/assembly/dist/cfg</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <!-- Symlink to executable, to put it on the PATH -->
+                                <mapping>
+                                    <directory>/opt/bin</directory>
+                                    <sources>
+                                        <softlinkSource>
+                                            <location>/opt/${dans-provider-name}/${project.artifactId}/bin/${project.artifactId}</location>
+                                        </softlinkSource>
+                                    </sources>
+                                </mapping>
+                                <!-- Symlink jar to version-less location -->
+                                <mapping>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/bin/</directory>
+                                    <sources>
+                                        <softlinkSource>
+                                            <destination>${project.artifactId}.jar</destination>
+                                            <location>/opt/${dans-provider-name}/${project.artifactId}/bin/${project.artifactId}-${project.version}.jar</location>
+                                        </softlinkSource>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <!-- Do not deploy to Maven, but instead to YUM repo with dans-nexus-maven-plugin -->
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>nl.knaw.dans</groupId>
+                        <artifactId>dans-nexus-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
