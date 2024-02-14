@@ -30,6 +30,7 @@
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
         <dd-data-vault-api.version>0.1.0-SNAPSHOT</dd-data-vault-api.version>
+        <command-name>data-vault</command-name>
     </properties>
     <dependencies>
         <dependency>
@@ -235,7 +236,7 @@
                                     <filemode>755</filemode>
                                     <sources>
                                         <source>
-                                            <location>src/main/assembly/dist/bin/${project.artifactId}</location>
+                                            <location>src/main/assembly/dist/bin/${command-name}</location>
                                         </source>
                                     </sources>
                                 </mapping>
@@ -254,7 +255,7 @@
                                     <directory>/opt/bin</directory>
                                     <sources>
                                         <softlinkSource>
-                                            <location>/opt/${dans-provider-name}/${project.artifactId}/bin/${project.artifactId}</location>
+                                            <location>/opt/${dans-provider-name}/${project.artifactId}/bin/${command-name}</location>
                                         </softlinkSource>
                                     </sources>
                                 </mapping>

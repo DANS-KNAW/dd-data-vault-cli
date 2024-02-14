@@ -44,7 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-@Command(name = "dd-data-vault-cli",
+@Command(name = "data-vault",
          mixinStandardHelpOptions = true,
          versionProvider = VersionProvider.class,
          description = "Manage a Data Vault.")
@@ -64,7 +64,7 @@ public class Main implements Callable<Integer> {
         File configFile = new File(System.getProperty("dans.default.config"));
         DataVaultConfiguration config = loadConfiguration(configFile);
         var metricRegistry = new MetricRegistry();
-        config.getLoggingFactory().configure(metricRegistry, "dd-data-vault-cli");
+        config.getLoggingFactory().configure(metricRegistry, "data-vault");
         DefaultApi api = createDefaultApi(config);
         var main = new CommandLine(new Main())
             .addSubcommand(new CommandLine(new Import())
