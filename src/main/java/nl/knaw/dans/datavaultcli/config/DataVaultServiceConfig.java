@@ -15,21 +15,20 @@
  */
 package nl.knaw.dans.datavaultcli.config;
 
-import io.dropwizard.core.Configuration;
+import io.dropwizard.client.JerseyClientConfiguration;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class DataVaultConfiguration extends Configuration {
-    @NotNull
+public class DataVaultServiceConfig {
     @Valid
-    private DataVaultServiceConfig dataVaultService;
+    @NotNull
+    private URI url;
 
     @NotNull
-    @Valid
-    private ImportAreaConfig importArea;
+    private JerseyClientConfiguration httpClient;
+
 }

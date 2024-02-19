@@ -24,7 +24,6 @@ import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.validation.Validators;
@@ -34,7 +33,6 @@ import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import org.slf4j.LoggerFactory;
-import picocli.AutoComplete;
 import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -72,6 +70,7 @@ public class Main implements Callable<Integer> {
                 .addSubcommand(new ImportStatus(api)))
             .addSubcommand(new CommandLine(new Layer())
                 .addSubcommand(new LayerNew(api)))
+            .addSubcommand(new CopyBatch(config.getImportArea()))
             .addSubcommand(new GenerateCompletion());
 
         int exitCode = main.execute(args);
