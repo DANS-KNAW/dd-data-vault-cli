@@ -37,12 +37,7 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 @Command(name = "copy-batch",
          mixinStandardHelpOptions = true,
-         description = "Copies a batch from source to target. Source must be an existing batch directory, target must be a location " +
-             "inside one of the inboxes of the ingest area. If it is not, an error is returned.\n" +
-             "If target is a directory with the same name as source, and it is empty, the contents of source will be copied into target. If target is not empty, an error is returned.\n" +
-             "If target is a directory with a different name, the contents of source will be copied into a new directory with the name of source inside target.\n" +
-             "After copying, the mode of the copied files and directories will be set to the value configured in the ingest " +
-             "area.")
+         description = "Copies a batch from source to target, setting the permissions as specified in the configuration.")
 public class CopyBatch implements Callable<Integer> {
     @NonNull
     private final ImportAreaConfig importAreaConfig;
