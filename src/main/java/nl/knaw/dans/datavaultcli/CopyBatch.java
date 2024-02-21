@@ -60,35 +60,33 @@ public class CopyBatch implements Callable<Integer> {
             return 1;
         }
 
-        if (target.getFileName().equals(source.getFileName())) {
-            if (!isDirectoryEmtpy(target)) {
-                System.err.println("Target directory is not empty.");
+        if (target.getFileName().equals(source.getFileName()) && Files.exists(target)) {
+            if (isDirectoryEmpty(target)) {
+                Files.createDirectories(target); // In case some ancestors of the target do not exist yet
+                FileUtils.copyDirectory(source.toFile(), target.toFile());
+                System.err.printf("Copied %s to %s%n", source, target);
+            } else {
+                System.err.println("Target directory not empty. When source and target have the same name, and target exists, it must be empty.");
                 return 1;
             }
-        }
-        else {
+        } else if (Files.exists(target)) {
             target = target.resolve(source.getFileName());
+            FileUtils.copyDirectory(source.toFile(), target.toFile());
+            System.err.printf("Copied %s to %s%n", source, target);
+        } else {
+            Files.createDirectories(target.getParent());
+            FileUtils.copyDirectory(source.toFile(), target.toFile());
+            System.err.printf("Copied %s to %s%n", source, target);
         }
 
-        // Create the target directory if it does not exist
-        if (!Files.exists(target)) {
-            Files.createDirectories(target);
-        }
-
-        // Copy the contents of source into target
-        FileUtils.copyDirectory(source.toFile(), target.toFile());
-
+        System.err.printf("Setting permissions on %s%n", target);
         setModeRecursively(target, importAreaConfig.getFileMode(), importAreaConfig.getDirectoryMode());
-
         return 0;
     }
 
-    private boolean isDirectoryEmtpy(Path directory) {
+    private boolean isDirectoryEmpty(Path directory) throws IOException {
         try (var files = Files.list(directory)) {
             return files.findAny().isEmpty();
-        }
-        catch (Exception e) {
-            return false;
         }
     }
 
