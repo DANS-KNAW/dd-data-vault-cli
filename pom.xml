@@ -24,7 +24,7 @@
         <version>0.26.0</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <name>dd-data-vault-cli</name>
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
