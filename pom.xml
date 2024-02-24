@@ -29,7 +29,7 @@
     <name>dd-data-vault-cli</name>
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
-        <dd-data-vault-api.version>0.1.0-SNAPSHOT</dd-data-vault-api.version>
+        <dd-data-vault-api.version>0.1.0</dd-data-vault-api.version>
         <command-name>data-vault</command-name>
     </properties>
     <dependencies>
