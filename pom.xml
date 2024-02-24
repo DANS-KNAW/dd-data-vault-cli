@@ -26,6 +26,11 @@
     <artifactId>dd-data-vault-cli</artifactId>
     <version>0.1.1-SNAPSHOT</version>
     <name>dd-data-vault-cli</name>
+    <scm>
+        <developerConnection>scm:git:ssh://github.com/DANS-KNAW/${project.artifactId}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
         <dd-data-vault-api.version>0.1.0</dd-data-vault-api.version>
