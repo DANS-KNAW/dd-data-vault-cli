@@ -295,8 +295,4 @@
             </build>
         </profile>
     </profiles>
-
-  <scm>
-    <tag>v0.1.0</tag>
-  </scm>
 </project>
