@@ -21,7 +21,7 @@
     <parent>
         <groupId>nl.knaw.dans</groupId>
         <artifactId>dd-parent</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
     <version>0.1.2-SNAPSHOT</version>
@@ -33,7 +33,6 @@
 
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
-        <dd-data-vault-api.version>0.2.0</dd-data-vault-api.version>
         <command-name>data-vault</command-name>
     </properties>
     <dependencies>
