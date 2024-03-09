@@ -15,32 +15,26 @@
  */
 package nl.knaw.dans.datavaultcli;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.ConfigurationException;
-import io.dropwizard.configuration.ConfigurationFactory;
-import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.core.setup.Environment;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
-import org.slf4j.LoggerFactory;
+import nl.knaw.dans.datavaultcli.lib.AbstractCommandLineApp;
+import nl.knaw.dans.datavaultcli.subcommand.CopyBatch;
+import nl.knaw.dans.datavaultcli.subcommand.Import;
+import nl.knaw.dans.datavaultcli.subcommand.ImportStart;
+import nl.knaw.dans.datavaultcli.subcommand.ImportStatus;
+import nl.knaw.dans.datavaultcli.subcommand.Layer;
+import nl.knaw.dans.datavaultcli.subcommand.LayerNew;
 import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import javax.validation.Validator;
-import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 @Command(name = "data-vault",
          mixinStandardHelpOptions = true,
@@ -48,23 +42,20 @@ import java.util.concurrent.Callable;
          description = "Manage a Data Vault.")
 @AllArgsConstructor
 @Slf4j
-public class Main implements Callable<Integer> {
-    @Override
-    public Integer call() throws Exception {
-        // The base command does nothing, it only serves as a container for subcommands.
-        return 0;
-    }
+public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration> {
 
     public static void main(String[] args) throws IOException, ConfigurationException {
-        // Prevent Dropwizard from logging to the console, before we have a chance to configure it.
-        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.OFF);
-        File configFile = new File(System.getProperty("dans.default.config"));
-        DataVaultConfiguration config = loadConfiguration(configFile);
-        var metricRegistry = new MetricRegistry();
-        config.getLoggingFactory().configure(metricRegistry, "data-vault");
+        new DataVaultCli().run(args);
+    }
+
+    public String getName() {
+        return "Data Vault CLI";
+    }
+
+    @Override
+    public void configureCommandLine(CommandLine commandLine, DataVaultConfiguration config) {
         DefaultApi api = createDefaultApi(config);
-        var main = new CommandLine(new Main())
+        commandLine
             .addSubcommand(new CommandLine(new Import())
                 .addSubcommand(new ImportStart(api))
                 .addSubcommand(new ImportStatus(api)))
@@ -72,26 +63,16 @@ public class Main implements Callable<Integer> {
                 .addSubcommand(new LayerNew(api)))
             .addSubcommand(new CopyBatch(config.getImportArea()))
             .addSubcommand(new GenerateCompletion());
-
-        int exitCode = main.execute(args);
-        System.exit(exitCode);
     }
 
     private static DefaultApi createDefaultApi(DataVaultConfiguration configuration) {
-        var client = new JerseyClientBuilder(new Environment(Main.class.getName()))
+        var client = new JerseyClientBuilder(new Environment(DataVaultCli.class.getName()))
             .using(configuration.getDataVaultService().getHttpClient())
-            .build(Main.class.getName() + " client");
+            .build(DataVaultCli.class.getName() + " client");
         var apiClient = new ApiClient();
         // End-slashes trip up the API client, so we remove them from the base path.
         apiClient.setBasePath(configuration.getDataVaultService().getUrl().toString().replaceAll("/+$", ""));
         apiClient.setHttpClient(client);
         return new DefaultApi(apiClient);
-    }
-
-    private static DataVaultConfiguration loadConfiguration(File configFile) throws IOException, ConfigurationException {
-        ObjectMapper objectMapper = Jackson.newObjectMapper(new YAMLFactory());
-        Validator validator = Validators.newValidator();
-        ConfigurationFactory<DataVaultConfiguration> factory = new YamlConfigurationFactory<>(DataVaultConfiguration.class, validator, objectMapper, "dw");
-        return factory.build(configFile);
     }
 }

@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavaultcli;
+package nl.knaw.dans.datavaultcli.subcommand;
 
 import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "import",
+@Command(name = "layer",
          mixinStandardHelpOptions = true,
-         description = "Manage import jobs.")
-public class Import implements Callable<Integer> {
-
-
+         description = "Manage layers.")
+public class Layer implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
-        //  This command does nothing, it only serves as a container for subcommands.
+        // The base command does nothing, it only serves as a container for subcommands.
         return 0;
     }
 }

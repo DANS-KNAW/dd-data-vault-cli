@@ -32,7 +32,7 @@
     </scm>
 
     <properties>
-        <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
+        <main-class>nl.knaw.dans.datavaultcli.DataVaultCli</main-class>
         <command-name>data-vault</command-name>
     </properties>
     <dependencies>
