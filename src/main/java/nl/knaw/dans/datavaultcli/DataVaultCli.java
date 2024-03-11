@@ -35,6 +35,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 @Command(name = "data-vault",
          mixinStandardHelpOptions = true,
@@ -44,7 +45,7 @@ import java.io.IOException;
 @Slf4j
 public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration> {
 
-    public static void main(String[] args) throws IOException, ConfigurationException {
+    public static void main(String[] args) throws Exception {
         new DataVaultCli().run(args);
     }
 
@@ -54,6 +55,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
 
     @Override
     public void configureCommandLine(CommandLine commandLine, DataVaultConfiguration config) {
+        System.out.println(config.getImportArea().getPath());
+        System.out.println(config.getImportArea().getFileMode());
         DefaultApi api = createDefaultApi(config);
         commandLine
             .addSubcommand(new CommandLine(new Import())
