@@ -16,26 +16,22 @@
 package nl.knaw.dans.datavaultcli;
 
 import io.dropwizard.client.JerseyClientBuilder;
-import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.core.setup.Environment;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
-import nl.knaw.dans.datavaultcli.lib.AbstractCommandLineApp;
 import nl.knaw.dans.datavaultcli.subcommand.CopyBatch;
 import nl.knaw.dans.datavaultcli.subcommand.Import;
 import nl.knaw.dans.datavaultcli.subcommand.ImportStart;
 import nl.knaw.dans.datavaultcli.subcommand.ImportStatus;
 import nl.knaw.dans.datavaultcli.subcommand.Layer;
 import nl.knaw.dans.datavaultcli.subcommand.LayerNew;
+import nl.knaw.dans.lib.util.AbstractCommandLineApp;
 import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 @Command(name = "data-vault",
          mixinStandardHelpOptions = true,
@@ -55,9 +51,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
 
     @Override
     public void configureCommandLine(CommandLine commandLine, DataVaultConfiguration config) {
-        System.out.println(config.getImportArea().getPath());
-        System.out.println(config.getImportArea().getFileMode());
         DefaultApi api = createDefaultApi(config);
+        log.debug("Configuring command line");
         commandLine
             .addSubcommand(new CommandLine(new Import())
                 .addSubcommand(new ImportStart(api))
@@ -69,6 +64,7 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
     }
 
     private static DefaultApi createDefaultApi(DataVaultConfiguration configuration) {
+        log.debug("Creating API client");
         var client = new JerseyClientBuilder(new Environment(DataVaultCli.class.getName()))
             .using(configuration.getDataVaultService().getHttpClient())
             .build(DataVaultCli.class.getName() + " client");
