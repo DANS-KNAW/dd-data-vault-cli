@@ -13,30 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavaultcli.subcommand;
+package nl.knaw.dans.datavaultcli.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
-@AllArgsConstructor
-@Command(name = "new",
+@Command(name = "status",
          mixinStandardHelpOptions = true,
-         description = "Create a new top layer. The old top layer will be scheduled for archiving.")
-public class LayerNew implements Callable<Integer> {
+         description = "Get the status of a job.")
+@RequiredArgsConstructor
+public class ImportStatus implements Callable<Integer> {
+    @NonNull
     private final DefaultApi api;
+
+    @Parameters(index = "0",
+                paramLabel = "id",
+                description = "The id of the job.")
+    private UUID id;
 
     @Override
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var layerStatusDto = api.layersPost();
-            System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(layerStatusDto));
+            var importJob = api.importsIdGet(id);
+            System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
             return 0;
         }
         catch (ApiException | JsonProcessingException e) {
@@ -44,5 +53,4 @@ public class LayerNew implements Callable<Integer> {
             return 1;
         }
     }
-
 }

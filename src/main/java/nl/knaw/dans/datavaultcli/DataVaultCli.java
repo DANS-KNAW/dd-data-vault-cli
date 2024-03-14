@@ -17,17 +17,16 @@ package nl.knaw.dans.datavaultcli;
 
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.core.setup.Environment;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
+import nl.knaw.dans.datavaultcli.command.CopyBatch;
+import nl.knaw.dans.datavaultcli.command.Import;
+import nl.knaw.dans.datavaultcli.command.ImportStart;
+import nl.knaw.dans.datavaultcli.command.ImportStatus;
+import nl.knaw.dans.datavaultcli.command.Layer;
+import nl.knaw.dans.datavaultcli.command.LayerNew;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
-import nl.knaw.dans.datavaultcli.subcommand.CopyBatch;
-import nl.knaw.dans.datavaultcli.subcommand.Import;
-import nl.knaw.dans.datavaultcli.subcommand.ImportStart;
-import nl.knaw.dans.datavaultcli.subcommand.ImportStatus;
-import nl.knaw.dans.datavaultcli.subcommand.Layer;
-import nl.knaw.dans.datavaultcli.subcommand.LayerNew;
 import nl.knaw.dans.lib.util.AbstractCommandLineApp;
 import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
@@ -37,10 +36,8 @@ import picocli.CommandLine.Command;
          mixinStandardHelpOptions = true,
          versionProvider = VersionProvider.class,
          description = "Manage a Data Vault.")
-@AllArgsConstructor
 @Slf4j
 public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration> {
-
     public static void main(String[] args) throws Exception {
         new DataVaultCli().run(args);
     }

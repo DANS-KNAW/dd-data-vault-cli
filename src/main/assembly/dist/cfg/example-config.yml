@@ -23,5 +23,5 @@ logging:
     - type: file
       archive: false
       timeZone: system
-      currentLogFilename: data-vault-cli.log
+      currentLogFilename: ${HOME}/data-vault-cli.log
 

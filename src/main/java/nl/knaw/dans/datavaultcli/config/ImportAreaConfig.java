@@ -16,7 +16,7 @@
 package nl.knaw.dans.datavaultcli.config;
 
 import lombok.Data;
-import nl.knaw.dans.datavaultcli.config.validation.ValidMode;
+import nl.knaw.dans.validation.ValidMode;
 
 import javax.validation.constraints.NotNull;
 import java.nio.file.Path;

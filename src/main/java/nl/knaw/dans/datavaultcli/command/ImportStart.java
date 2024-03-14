@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavaultcli.subcommand;
+package nl.knaw.dans.datavaultcli.command;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
