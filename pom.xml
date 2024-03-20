@@ -144,12 +144,8 @@
                                 <apiPackage>nl.knaw.dans.datavaultcli.client</apiPackage>
                                 <modelPackage>nl.knaw.dans.datavaultcli.api</modelPackage>
                                 <invokerPackage>nl.knaw.dans.datavaultcli.client</invokerPackage>
-                                <!-- the client does not appear to need annotations so we can remove them -->
-                                <annotationLibrary>none</annotationLibrary>
-                                <!-- this generates jersey2 client -->
+                                 <annotationLibrary>none</annotationLibrary>-->
                                 <library>jersey2</library>
-                                <!-- remove this optional dependency as it was not used in the generated code anyway  -->
-                                <!-- see https://github.com/OpenAPITools/jackson-databind-nullable -->
                                 <openApiNullable>false</openApiNullable>
                             </configOptions>
                         </configuration>

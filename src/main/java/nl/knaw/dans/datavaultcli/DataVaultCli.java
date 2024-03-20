@@ -15,8 +15,6 @@
  */
 package nl.knaw.dans.datavaultcli;
 
-import io.dropwizard.client.JerseyClientBuilder;
-import io.dropwizard.core.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
@@ -28,6 +26,7 @@ import nl.knaw.dans.datavaultcli.command.Layer;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import nl.knaw.dans.lib.util.AbstractCommandLineApp;
+import nl.knaw.dans.lib.util.ClientProxyBuilder;
 import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -48,7 +47,12 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
 
     @Override
     public void configureCommandLine(CommandLine commandLine, DataVaultConfiguration config) {
-        DefaultApi api = createDefaultApi(config);
+        DefaultApi api = new ClientProxyBuilder<ApiClient, DefaultApi>()
+            .apiClient(new ApiClient())
+            .basePath(config.getDataVaultService().getUrl())
+            .httpClient(config.getDataVaultService().getHttpClient())
+            .defaultApiCtor(DefaultApi::new)
+            .build();
         log.debug("Configuring command line");
         commandLine
             .addSubcommand(new CommandLine(new Import())
@@ -58,17 +62,5 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new LayerNew(api)))
             .addSubcommand(new CopyBatch(config.getImportArea()))
             .addSubcommand(new GenerateCompletion());
-    }
-
-    private static DefaultApi createDefaultApi(DataVaultConfiguration configuration) {
-        log.debug("Creating API client");
-        var client = new JerseyClientBuilder(new Environment(DataVaultCli.class.getName()))
-            .using(configuration.getDataVaultService().getHttpClient())
-            .build(DataVaultCli.class.getName() + " client");
-        var apiClient = new ApiClient();
-        // End-slashes trip up the API client, so we remove them from the base path.
-        apiClient.setBasePath(configuration.getDataVaultService().getUrl().toString().replaceAll("/+$", ""));
-        apiClient.setHttpClient(client);
-        return new DefaultApi(apiClient);
     }
 }
