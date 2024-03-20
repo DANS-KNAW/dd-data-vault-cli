@@ -60,7 +60,6 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new ImportStatus(api)))
             .addSubcommand(new CommandLine(new Layer())
                 .addSubcommand(new LayerNew(api)))
-            .addSubcommand(new CopyBatch(config.getImportArea()))
-            .addSubcommand(new GenerateCompletion());
+            .addSubcommand(new CopyBatch(config.getImportArea()));
     }
 }
