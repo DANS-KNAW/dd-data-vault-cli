@@ -24,11 +24,11 @@
         <version>1.3.1</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
     <name>DD Data Vault CLI</name>
     <scm>
         <developerConnection>scm:git:ssh://github.com/DANS-KNAW/${project.artifactId}</developerConnection>
-        <tag>v0.2.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
