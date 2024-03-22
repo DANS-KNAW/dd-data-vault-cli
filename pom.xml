@@ -21,7 +21,7 @@
     <parent>
         <groupId>nl.knaw.dans</groupId>
         <artifactId>dd-parent</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.1</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
     <version>0.1.2-SNAPSHOT</version>
@@ -32,15 +32,25 @@
     </scm>
 
     <properties>
-        <main-class>nl.knaw.dans.datavaultcli.Main</main-class>
-        <dd-data-vault-api.version>0.2.0</dd-data-vault-api.version>
+        <main-class>nl.knaw.dans.datavaultcli.DataVaultCli</main-class>
         <command-name>data-vault</command-name>
     </properties>
     <dependencies>
         <dependency>
+            <groupId>nl.knaw.dans</groupId>
+            <artifactId>dans-java-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>nl.knaw.dans</groupId>
+            <artifactId>dans-validation-lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.7.5</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
@@ -131,12 +141,8 @@
                                 <apiPackage>nl.knaw.dans.datavaultcli.client</apiPackage>
                                 <modelPackage>nl.knaw.dans.datavaultcli.api</modelPackage>
                                 <invokerPackage>nl.knaw.dans.datavaultcli.client</invokerPackage>
-                                <!-- the client does not appear to need annotations so we can remove them -->
-                                <annotationLibrary>none</annotationLibrary>
-                                <!-- this generates jersey2 client -->
+                                 <annotationLibrary>none</annotationLibrary>-->
                                 <library>jersey2</library>
-                                <!-- remove this optional dependency as it was not used in the generated code anyway  -->
-                                <!-- see https://github.com/OpenAPITools/jackson-databind-nullable -->
                                 <openApiNullable>false</openApiNullable>
                             </configOptions>
                         </configuration>

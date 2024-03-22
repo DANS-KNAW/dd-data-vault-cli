@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavaultcli;
+package nl.knaw.dans.datavaultcli.command;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine.Command;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 @RequiredArgsConstructor
+@Slf4j
 @Command(name = "copy-batch",
          mixinStandardHelpOptions = true,
          description = "Copies a batch from source to target, setting the permissions as specified in the configuration.")
@@ -50,6 +52,7 @@ public class CopyBatch implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+        log.debug("Copying batch from {} to {}", source, target);
         if (!Files.isDirectory(source)) {
             System.err.println("Source must be an existing directory.");
             return 1;
@@ -61,7 +64,9 @@ public class CopyBatch implements Callable<Integer> {
         }
 
         if (target.getFileName().equals(source.getFileName()) && Files.exists(target)) {
+            log.debug("Source and target have the same name, and target exists.");
             if (isDirectoryEmpty(target)) {
+                log.debug("Target directory is empty.");
                 Files.createDirectories(target); // In case some ancestors of the target do not exist yet
                 FileUtils.copyDirectory(source.toFile(), target.toFile());
                 System.err.printf("Copied %s to %s%n", source, target);
@@ -70,10 +75,12 @@ public class CopyBatch implements Callable<Integer> {
                 return 1;
             }
         } else if (Files.exists(target)) {
+            log.debug("Target exists, but has a different name than the source.");
             target = target.resolve(source.getFileName());
             FileUtils.copyDirectory(source.toFile(), target.toFile());
             System.err.printf("Copied %s to %s%n", source, target);
         } else {
+            log.debug("Target does not exist yet.");
             Files.createDirectories(target.getParent());
             FileUtils.copyDirectory(source.toFile(), target.toFile());
             System.err.printf("Copied %s to %s%n", source, target);
