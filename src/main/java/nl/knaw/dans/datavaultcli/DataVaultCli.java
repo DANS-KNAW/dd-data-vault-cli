@@ -26,14 +26,14 @@ import nl.knaw.dans.datavaultcli.command.Layer;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import nl.knaw.dans.lib.util.AbstractCommandLineApp;
-import nl.knaw.dans.lib.util.CliVersionProvider;
 import nl.knaw.dans.lib.util.ClientProxyBuilder;
+import nl.knaw.dans.lib.util.PicocliVersionProvider;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "data-vault",
          mixinStandardHelpOptions = true,
-         versionProvider = CliVersionProvider.class,
+         versionProvider = PicocliVersionProvider.class,
          description = "Manage a Data Vault.")
 @Slf4j
 public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration> {
