@@ -70,16 +70,19 @@ public class CopyBatch implements Callable<Integer> {
                 Files.createDirectories(target); // In case some ancestors of the target do not exist yet
                 FileUtils.copyDirectory(source.toFile(), target.toFile());
                 System.err.printf("Copied %s to %s%n", source, target);
-            } else {
+            }
+            else {
                 System.err.println("Target directory not empty. When source and target have the same name, and target exists, it must be empty.");
                 return 1;
             }
-        } else if (Files.exists(target)) {
+        }
+        else if (Files.exists(target)) {
             log.debug("Target exists, but has a different name than the source.");
             target = target.resolve(source.getFileName());
             FileUtils.copyDirectory(source.toFile(), target.toFile());
             System.err.printf("Copied %s to %s%n", source, target);
-        } else {
+        }
+        else {
             log.debug("Target does not exist yet.");
             Files.createDirectories(target.getParent());
             FileUtils.copyDirectory(source.toFile(), target.toFile());

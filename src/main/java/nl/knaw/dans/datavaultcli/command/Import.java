@@ -24,7 +24,6 @@ import java.util.concurrent.Callable;
          description = "Manage import jobs.")
 public class Import implements Callable<Integer> {
 
-
     @Override
     public Integer call() throws Exception {
         //  This command does nothing, it only serves as a container for subcommands.
