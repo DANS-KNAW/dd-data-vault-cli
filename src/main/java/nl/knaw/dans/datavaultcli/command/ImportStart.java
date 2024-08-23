@@ -46,7 +46,7 @@ public class ImportStart implements Callable<Integer> {
             description = "The path parameter points to a single object import directory (by default path points to a batch directory).")
     private boolean singleObject;
 
-    @Option(names= {"-t", "--allow-timestamp-version-directories"},
+    @Option(names = { "-t", "--allow-timestamp-version-directories" },
             description = "Allow version directories to have a timestamp as name. Default is false.")
     private boolean acceptTimestampVersionDirectories;
 
