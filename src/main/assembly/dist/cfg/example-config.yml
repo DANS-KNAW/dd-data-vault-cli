@@ -1,15 +1,17 @@
-dataVaultService:
-  url: http://localhost:20365/
-  httpClient:
-    timeout: 30s
-    connectionTimeout: 15s
-    timeToLive: 1h
-    retries: 2
-
-importArea:
-  path: /var/opt/dans.knaw.nl/tmp/data-vault/inbox
-  fileMode: '0660'
-  directoryMode: '0770'
+storageRoots:
+#  example:
+#    dataVaultService:
+#      url: http://localhost:20365/
+#      httpClient:
+#        timeout: 30s
+#        connectionTimeout: 15s
+#        timeToLive: 1h
+#        retries: 2
+#
+#    importArea:
+#      path: /var/opt/dans.knaw.nl/tmp/data-vault/inbox
+#      fileMode: '0660'
+#      directoryMode: '0770'
 
 #
 # See https://www.dropwizard.io/en/latest/manual/configuration.html#logging

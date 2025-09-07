@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -42,7 +44,12 @@ import java.util.concurrent.Callable;
          description = "Copies a batch from source to target, setting the permissions as specified in the configuration.")
 public class CopyBatch implements Callable<Integer> {
     @NonNull
-    private final ImportAreaConfig importAreaConfig;
+    private final Map<String, ImportAreaConfig> importAreaConfigs;
+
+    @Option(names = {"-r", "--storage-root"},
+            description = "The storage root to execute the command on.",
+            required = true)
+    private String storageRoot;
 
     @Parameters(index = "0", paramLabel = "source", description = "The path to the batch to copy.")
     private Path source;
@@ -55,6 +62,12 @@ public class CopyBatch implements Callable<Integer> {
         log.debug("Copying batch from {} to {}", source, target);
         if (!Files.isDirectory(source)) {
             System.err.println("Source must be an existing directory.");
+            return 1;
+        }
+
+        var importAreaConfig = importAreaConfigs.get(storageRoot);
+        if (importAreaConfig == null) {
+            System.err.printf("No import area found for storage root %s%n", storageRoot);
             return 1;
         }
 

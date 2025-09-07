@@ -16,24 +16,29 @@
 package nl.knaw.dans.datavaultcli.command;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
-import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-@Command(name = "import",
-         mixinStandardHelpOptions = true,
-         description = "Manage import jobs.")
-public class Import extends AbstractStorageRootCommand implements Callable<Integer> {
+@RequiredArgsConstructor
+public class AbstractStorageRootCommand {
+    @NonNull
+    private final Map<String, DefaultApi> storageRoots;
 
-    public Import(@NonNull Map<String, DefaultApi> storageRoots) {
-        super(storageRoots);
-    }
+    @Option(names = { "-r", "--storage-root" },
+            description = "The storage root to execute the command on.",
+            required = true)
+    protected String storageRoot;
 
-    @Override
-    public Integer call() throws Exception {
-        return 0;
+    protected DefaultApi getApi() {
+        var api = storageRoots.get(this.storageRoot);
+        if (api == null) {
+            System.err.println("No storage root found for " + this.storageRoot);
+            throw new IllegalArgumentException("No storage root found for " + this.storageRoot);
+        }
+        return api;
     }
 
 }

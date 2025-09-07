@@ -19,23 +19,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import nl.knaw.dans.datavaultcli.client.ApiException;
-import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ParentCommand;
 
 import java.util.concurrent.Callable;
 
-@AllArgsConstructor
 @Command(name = "new",
          mixinStandardHelpOptions = true,
          description = "Create a new top layer. The old top layer will be scheduled for archiving.")
 public class LayerNew implements Callable<Integer> {
-    private final DefaultApi api;
+    @ParentCommand
+    private Layer layerCommand;
 
     @Override
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var layerStatusDto = api.layersPost();
+            var layerStatusDto = layerCommand.getApi().layersPost();
             System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(layerStatusDto));
             return 0;
         }

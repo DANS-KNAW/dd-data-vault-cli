@@ -17,12 +17,11 @@ package nl.knaw.dans.datavaultcli.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.client.ApiException;
-import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -32,8 +31,8 @@ import java.util.concurrent.Callable;
          description = "Get the status of a job.")
 @RequiredArgsConstructor
 public class ImportStatus implements Callable<Integer> {
-    @NonNull
-    private final DefaultApi api;
+    @ParentCommand
+    private Import importCommand;
 
     @Parameters(index = "0",
                 paramLabel = "id",
@@ -44,7 +43,7 @@ public class ImportStatus implements Callable<Integer> {
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var importJob = api.importsIdGet(id);
+            var importJob = importCommand.getApi().importsIdGet(id);
             System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
             return 0;
         }

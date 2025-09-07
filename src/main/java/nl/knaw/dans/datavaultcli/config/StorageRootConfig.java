@@ -15,16 +15,18 @@
  */
 package nl.knaw.dans.datavaultcli.config;
 
-import io.dropwizard.core.Configuration;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class DataVaultConfiguration extends Configuration {
+public class StorageRootConfig {
     @NotNull
-    private Map<String, StorageRootConfig> storageRoots;
+    @Valid
+    private DataVaultServiceConfig dataVaultService;
+
+    @NotNull
+    @Valid
+    private ImportAreaConfig importArea;
 }
