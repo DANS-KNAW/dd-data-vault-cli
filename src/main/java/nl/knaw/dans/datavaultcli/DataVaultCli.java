@@ -18,6 +18,8 @@ package nl.knaw.dans.datavaultcli;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
+import nl.knaw.dans.datavaultcli.command.ConsistencyCheck;
+import nl.knaw.dans.datavaultcli.command.ConsistencyCheckNew;
 import nl.knaw.dans.datavaultcli.command.CopyBatch;
 import nl.knaw.dans.datavaultcli.command.Import;
 import nl.knaw.dans.datavaultcli.command.ImportStart;
@@ -61,7 +63,9 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new ImportStatus()))
             .addSubcommand(new CommandLine(new Layer(storageRootEndPoints))
                 .addSubcommand(new LayerNew())
-            .addSubcommand(new CopyBatch(importAreaConfigs)));
+                .addSubcommand(new CopyBatch(importAreaConfigs)))
+            .addSubcommand(new CommandLine(new ConsistencyCheck(storageRootEndPoints))
+                .addSubcommand(new ConsistencyCheckNew()));
     }
 
     private Map<String, DefaultApi> getStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {
