@@ -34,7 +34,7 @@
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.DataVaultCli</main-class>
         <command-name>data-vault</command-name>
-        <dd-data-vault-api.version>0.4.1-SNAPSHOT</dd-data-vault-api.version>
+        <dd-data-vault-api.version>0.5.0</dd-data-vault-api.version>
     </properties>
     <dependencies>
         <dependency>
