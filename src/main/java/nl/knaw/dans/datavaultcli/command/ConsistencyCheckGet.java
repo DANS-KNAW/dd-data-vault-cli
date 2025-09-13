@@ -18,19 +18,22 @@ package nl.knaw.dans.datavaultcli.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.Context;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Parameters;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-@Command(name = "get")
+@Command(name = "get",
+         mixinStandardHelpOptions = true,
+         description = "Get the status of a consistency check by id.")
+@RequiredArgsConstructor
 public class ConsistencyCheckGet implements Callable<Integer> {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @ParentCommand
-    private ConsistencyCheck consistencyCheck;
+    private final Context context;
 
     @Parameters(index = "0", paramLabel = "ID", description = "UUID of the consistency check to retrieve")
     private UUID id;
@@ -38,7 +41,7 @@ public class ConsistencyCheckGet implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            var result = consistencyCheck.getApi().consistencyChecksIdGet(id);
+            var result = context.getApi().consistencyChecksIdGet(id);
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             mapper.writerWithDefaultPrettyPrinter().writeValue(System.out, result);

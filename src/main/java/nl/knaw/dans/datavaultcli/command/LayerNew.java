@@ -17,25 +17,25 @@ package nl.knaw.dans.datavaultcli.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.ParentCommand;
 
 import java.util.concurrent.Callable;
 
 @Command(name = "new",
          mixinStandardHelpOptions = true,
          description = "Create a new top layer. The old top layer will be scheduled for archiving.")
+@RequiredArgsConstructor
 public class LayerNew implements Callable<Integer> {
-    @ParentCommand
-    private Layer layerCommand;
+    private final Context context;
 
     @Override
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var layerStatusDto = layerCommand.getApi().layersPost();
+            var layerStatusDto = context.getApi().layersPost();
             System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(layerStatusDto));
             return 0;
         }

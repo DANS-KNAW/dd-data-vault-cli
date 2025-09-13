@@ -18,6 +18,7 @@ package nl.knaw.dans.datavaultcli.command;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine.Command;
@@ -37,19 +38,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-@RequiredArgsConstructor
 @Slf4j
 @Command(name = "copy-batch",
          mixinStandardHelpOptions = true,
          description = "Copies a batch from source to target, setting the permissions as specified in the configuration.")
+@RequiredArgsConstructor
 public class CopyBatch implements Callable<Integer> {
-    @NonNull
-    private final Map<String, ImportAreaConfig> importAreaConfigs;
-
-    @Option(names = {"-r", "--storage-root"},
-            description = "The storage root to execute the command on.",
-            required = true)
-    private String storageRoot;
+    private final Context context;
 
     @Parameters(index = "0", paramLabel = "source", description = "The path to the batch to copy.")
     private Path source;
@@ -65,11 +60,7 @@ public class CopyBatch implements Callable<Integer> {
             return 1;
         }
 
-        var importAreaConfig = importAreaConfigs.get(storageRoot);
-        if (importAreaConfig == null) {
-            System.err.printf("No import area found for storage root %s%n", storageRoot);
-            return 1;
-        }
+        var importAreaConfig = context.getImportAreaConfig();
 
         if (!target.toAbsolutePath().startsWith(importAreaConfig.getPath().toAbsolutePath())) {
             System.err.println("Destination must be inside the import area.");

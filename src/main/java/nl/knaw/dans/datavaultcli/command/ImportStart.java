@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.datavaultcli.command;
 
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.api.ImportCommandDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
@@ -29,9 +31,9 @@ import java.util.concurrent.Callable;
 @Command(name = "start",
          mixinStandardHelpOptions = true,
          description = "Start a job.")
+@RequiredArgsConstructor
 public class ImportStart implements Callable<Integer> {
-    @ParentCommand
-    private Import importCommand;
+    private final Context context;
 
     @Parameters(index = "0",
                 paramLabel = "path",
@@ -50,7 +52,7 @@ public class ImportStart implements Callable<Integer> {
     public Integer call() {
         try {
             Path batchDir = Paths.get(this.path);
-            var importJob = importCommand.getApi().importsPost(new ImportCommandDto()
+            var importJob = context.getApi().importsPost(new ImportCommandDto()
                 .path(Path.of(batchDir.toString()).toAbsolutePath().toString())
                 .singleObject(singleObject)
                 .acceptTimestampVersionDirectories(acceptTimestampVersionDirectories));

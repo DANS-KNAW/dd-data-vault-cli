@@ -18,21 +18,24 @@ package nl.knaw.dans.datavaultcli.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.api.ConsistencyCheckRequestDto;
 import nl.knaw.dans.datavaultcli.api.ConsistencyCheckRequestDto.TypeEnum;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParentCommand;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "new")
+@Command(name = "new",
+         mixinStandardHelpOptions = true,
+         description = "Create a new consistency check.")
+@RequiredArgsConstructor
 public class ConsistencyCheckNew implements Callable<Integer> {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    @ParentCommand
-    private ConsistencyCheck consistencyCheck;
+    private final Context context;
 
     @ArgGroup(multiplicity = "1")
     private ExclusiveGroup group;
@@ -56,7 +59,7 @@ public class ConsistencyCheckNew implements Callable<Integer> {
                 request.setLayerId(group.layer);
                 request.setType(TypeEnum.LISTING_RECORDS);
             }
-            var result = consistencyCheck.getApi().consistencyChecksPost(request);
+            var result = context.getApi().consistencyChecksPost(request);
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             mapper.writerWithDefaultPrettyPrinter().writeValue(System.out, result);

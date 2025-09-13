@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavaultcli.command;
+package nl.knaw.dans.datavaultcli;
 
-import lombok.NonNull;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
-import picocli.CommandLine.Command;
+import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
 
-import java.util.Map;
-import java.util.concurrent.Callable;
+public interface Context {
 
-@Command(name = "consistency-check",
-         mixinStandardHelpOptions = true,
-         description = "Manage consistency checks.")
-public class ConsistencyCheck implements Callable<Integer> {
+    DefaultApi getApi();
 
-    @Override
-    public Integer call() throws Exception {
-        return 0;
-    }
+    ImportAreaConfig getImportAreaConfig();
+
 }

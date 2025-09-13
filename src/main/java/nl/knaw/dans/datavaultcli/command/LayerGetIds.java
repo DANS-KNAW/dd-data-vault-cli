@@ -17,6 +17,8 @@ package nl.knaw.dans.datavaultcli.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ParentCommand;
@@ -26,16 +28,15 @@ import java.util.concurrent.Callable;
 @Command(name = "list-ids",
          mixinStandardHelpOptions = true,
          description = "List all layer IDs.")
+@RequiredArgsConstructor
 public class LayerGetIds implements Callable<Integer> {
-
-    @ParentCommand
-    private Layer layerCommand;
+    private final Context context;
 
     @Override
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var ids = layerCommand.getApi().layersIdsGet();
+            var ids = context.getApi().layersIdsGet();
             System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ids));
             return 0;
         }

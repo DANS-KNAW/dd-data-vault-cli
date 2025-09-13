@@ -17,6 +17,8 @@ package nl.knaw.dans.datavaultcli.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -27,10 +29,9 @@ import java.util.concurrent.Callable;
 @Command(name = "status",
          mixinStandardHelpOptions = true,
          description = "Show the status of a layer by id, or use 'top' to show the status of the top layer.")
+@RequiredArgsConstructor
 public class LayerGetStatus implements Callable<Integer> {
-
-    @ParentCommand
-    private Layer layerCommand;
+    private final Context context;
 
     @Parameters(index = "0", paramLabel = "ID|top",
                 description = "Layer id (long) or the word 'top' to get the status of the top layer")
@@ -40,7 +41,7 @@ public class LayerGetStatus implements Callable<Integer> {
     public Integer call() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            var api = layerCommand.getApi();
+            var api = context.getApi();
 
             var response = "top".equalsIgnoreCase(idOrTop)
                 ? api.layersTopGet()

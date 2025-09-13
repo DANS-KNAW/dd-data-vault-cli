@@ -15,21 +15,14 @@
  */
 package nl.knaw.dans.datavaultcli.command;
 
-import lombok.NonNull;
-import nl.knaw.dans.datavaultcli.client.DefaultApi;
 import picocli.CommandLine.Command;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 @Command(name = "layer",
          mixinStandardHelpOptions = true,
          description = "Manage layers.")
-public class Layer extends AbstractStorageRootCommand implements Callable<Integer> {
-
-    public Layer(@NonNull Map<String, DefaultApi> storageRoots) {
-        super(storageRoots);
-    }
+public class Layer implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {

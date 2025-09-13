@@ -37,6 +37,7 @@ import nl.knaw.dans.lib.util.ClientProxyBuilder;
 import nl.knaw.dans.lib.util.PicocliVersionProvider;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
          versionProvider = PicocliVersionProvider.class,
          description = "Manage one or more Data Vault instances")
 @Slf4j
-public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration> {
+public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration> implements Context {
     public static void main(String[] args) throws Exception {
         new DataVaultCli().run(args);
     }
@@ -55,27 +56,64 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
         return "Data Vault CLI";
     }
 
+    private Map<String, DefaultApi> storageRootsEndPoints;
+
+    private Map<String, ImportAreaConfig> importAreaConfigs;
+
+    @Option(names = { "-r", "--storage-root" },
+            description = "The storage root to execute the command on.",
+            required = true)
+    private String storageRoot;
+
+    @Override
+    public DefaultApi getApi() {
+        if (storageRootsEndPoints == null) {
+            throw new IllegalStateException("getApi() called before initialization.");
+        }
+
+        var api = storageRootsEndPoints.get(this.storageRoot);
+        if (api == null) {
+            System.err.println("No storage root found for " + this.storageRoot);
+            throw new IllegalArgumentException("No storage root found for " + this.storageRoot);
+        }
+        return api;
+    }
+
+    @Override
+    public ImportAreaConfig getImportAreaConfig() {
+        if (importAreaConfigs == null) {
+            throw new IllegalStateException("getImportAreaConfig() called before initialization.");
+        }
+
+        var config = importAreaConfigs.get(this.storageRoot);
+        if (config == null) {
+            System.err.println("No import area found for storage root " + this.storageRoot);
+            throw new IllegalArgumentException("No import area found for storage root " + this.storageRoot);
+        }
+        return config;
+    }
+
     @Override
     public void configureCommandLine(CommandLine commandLine, DataVaultConfiguration config) {
         log.debug("Configuring command line");
-        var storageRootEndPoints = getStorageRootEndPoints(config.getStorageRoots());
-        var importAreaConfigs = getImportAreaConfigs(config.getStorageRoots());
+        fillStorageRootEndPoints(config.getStorageRoots());
+        fillImportAreaConfigs(config.getStorageRoots());
         commandLine
-            .addSubcommand(new CommandLine(new Import(storageRootEndPoints))
-                .addSubcommand(new ImportStart())
-                .addSubcommand(new ImportStatus()))
-            .addSubcommand(new CommandLine(new Layer(storageRootEndPoints))
-                .addSubcommand(new LayerNew())
-                .addSubcommand(new LayerGetIds())
-                .addSubcommand(new LayerGetStatus()))
-            .addSubcommand(new CopyBatch(importAreaConfigs))
-            .addSubcommand(new CommandLine(new ConsistencyCheck(storageRootEndPoints))
-                .addSubcommand(new ConsistencyCheckNew())
-                .addSubcommand(new ConsistencyCheckGet()));
+            .addSubcommand(new CommandLine(new Import())
+                .addSubcommand(new ImportStart(this))
+                .addSubcommand(new ImportStatus(this)))
+            .addSubcommand(new CommandLine(new Layer())
+                .addSubcommand(new LayerNew(this))
+                .addSubcommand(new LayerGetIds(this))
+                .addSubcommand(new LayerGetStatus(this)))
+            .addSubcommand(new CopyBatch(this))
+            .addSubcommand(new CommandLine(new ConsistencyCheck())
+                .addSubcommand(new ConsistencyCheckNew(this))
+                .addSubcommand(new ConsistencyCheckGet(this)));
     }
 
-    private Map<String, DefaultApi> getStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {
-        return storageRoots.entrySet().stream()
+    private void fillStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {
+        storageRootsEndPoints = storageRoots.entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, e -> new ClientProxyBuilder<ApiClient, DefaultApi>()
                 .apiClient(new ApiClient())
                 .basePath(e.getValue().getDataVaultService().getUrl())
@@ -84,8 +122,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .build()));
     }
 
-    private Map<String, ImportAreaConfig> getImportAreaConfigs(Map<String, StorageRootConfig> storageRoots) {
-        return storageRoots
+    private void fillImportAreaConfigs(Map<String, StorageRootConfig> storageRoots) {
+        importAreaConfigs = storageRoots
             .entrySet()
             .stream()
             .map(e -> Map.entry(e.getKey(), e.getValue().getImportArea()))

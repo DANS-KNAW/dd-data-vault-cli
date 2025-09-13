@@ -15,22 +15,16 @@
  */
 package nl.knaw.dans.datavaultcli.command;
 
-import lombok.NonNull;
-import nl.knaw.dans.datavaultcli.client.DefaultApi;
+import nl.knaw.dans.datavaultcli.DataVaultCli;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ParentCommand;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 @Command(name = "import",
          mixinStandardHelpOptions = true,
          description = "Manage import jobs.")
-public class Import extends AbstractStorageRootCommand implements Callable<Integer> {
-
-    public Import(@NonNull Map<String, DefaultApi> storageRoots) {
-        super(storageRoots);
-    }
-
+public class Import implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         return 0;
