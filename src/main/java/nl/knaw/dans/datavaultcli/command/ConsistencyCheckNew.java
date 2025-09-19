@@ -33,8 +33,6 @@ import java.util.concurrent.Callable;
          description = "Create a new consistency check.")
 @RequiredArgsConstructor
 public class ConsistencyCheckNew implements Callable<Integer> {
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     private final Context context;
 
     @ArgGroup(multiplicity = "1")
@@ -60,9 +58,8 @@ public class ConsistencyCheckNew implements Callable<Integer> {
                 request.setType(TypeEnum.LISTING_RECORDS);
             }
             var result = context.getApi().consistencyChecksPost(request);
-            mapper.registerModule(new JavaTimeModule());
-            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(System.out, result);
+            context.getObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(System.out, result);
             return 0;
         }
         catch (Exception e) {

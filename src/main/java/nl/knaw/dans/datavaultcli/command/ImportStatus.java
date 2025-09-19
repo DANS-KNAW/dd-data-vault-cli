@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParentCommand;
+import picocli.CommandLine.ArgGroup;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -34,18 +35,30 @@ import java.util.concurrent.Callable;
 public class ImportStatus implements Callable<Integer> {
     private final Context context;
 
-    @Parameters(index = "0",
-                paramLabel = "id",
-                description = "The id of the job.")
-    private UUID id;
+    static class Selection {
+        @Parameters(index = "0", paramLabel = "id", description = "The id of the job.")
+        UUID id;
+
+        @Option(names = {"-a", "--all"}, description = "Show all jobs")
+        boolean all;
+    }
+
+    @ArgGroup(exclusive = true, multiplicity = "1")
+    Selection selection;
 
     @Override
     public Integer call() {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            var importJob = context.getApi().importsIdGet(id);
-            System.err.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
-            return 0;
+            if (selection.all) {
+                var jobs = context.getApi().importsGet();
+                System.err.println(context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jobs));
+                return 0;
+            }
+            else {
+                var importJob = context.getApi().importsIdGet(selection.id);
+                System.err.println(context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
+                return 0;
+            }
         }
         catch (ApiException | JsonProcessingException e) {
             System.err.println("Error: " + e.getMessage());

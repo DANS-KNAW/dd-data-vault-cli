@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.datavaultcli.command;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.api.ImportCommandDto;
@@ -22,7 +23,6 @@ import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParentCommand;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,10 +56,10 @@ public class ImportStart implements Callable<Integer> {
                 .path(Path.of(batchDir.toString()).toAbsolutePath().toString())
                 .singleObject(singleObject)
                 .acceptTimestampVersionDirectories(acceptTimestampVersionDirectories));
-            System.err.println("Submitted import job: " + importJob.getId());
+            System.err.println("Submitted import job: " + context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
             return 0;
         }
-        catch (ApiException e) {
+        catch (ApiException | JsonProcessingException e) {
             System.err.println("Error: " + e.getMessage());
             return 1;
         }

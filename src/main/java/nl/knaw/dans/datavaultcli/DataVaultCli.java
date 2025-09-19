@@ -15,6 +15,10 @@
  */
 package nl.knaw.dans.datavaultcli;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
@@ -51,6 +55,9 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
     public static void main(String[] args) throws Exception {
         new DataVaultCli().run(args);
     }
+
+    @Getter
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String getName() {
         return "Data Vault CLI";
@@ -98,6 +105,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
         log.debug("Configuring command line");
         fillStorageRootEndPoints(config.getStorageRoots());
         fillImportAreaConfigs(config.getStorageRoots());
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         commandLine
             .addSubcommand(new CommandLine(new Import())
                 .addSubcommand(new ImportStart(this))
