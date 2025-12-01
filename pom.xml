@@ -24,7 +24,7 @@
         <version>1.10.0</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>DD Data Vault CLI</name>
     <scm>
         <developerConnection>scm:git:ssh://github.com/DANS-KNAW/${project.artifactId}</developerConnection>
