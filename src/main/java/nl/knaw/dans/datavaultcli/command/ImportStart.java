@@ -44,18 +44,13 @@ public class ImportStart implements Callable<Integer> {
             description = "The path parameter points to a single object import directory (by default path points to a batch directory).")
     private boolean singleObject;
 
-    @Option(names = { "-t", "--allow-timestamp-version-directories" },
-            description = "Allow version directories to have a timestamp as name. Default is false.")
-    private boolean acceptTimestampVersionDirectories;
-
     @Override
     public Integer call() {
         try {
             Path batchDir = Paths.get(this.path);
             var importJob = context.getApi().importsPost(new ImportCommandDto()
                 .path(Path.of(batchDir.toString()).toAbsolutePath().toString())
-                .singleObject(singleObject)
-                .acceptTimestampVersionDirectories(acceptTimestampVersionDirectories));
+                .singleObject(singleObject));
             System.err.println("Submitted import job: " + context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
             return 0;
         }
