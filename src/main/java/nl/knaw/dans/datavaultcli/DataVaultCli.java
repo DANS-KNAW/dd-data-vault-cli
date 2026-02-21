@@ -30,6 +30,7 @@ import nl.knaw.dans.datavaultcli.command.Import;
 import nl.knaw.dans.datavaultcli.command.ImportStart;
 import nl.knaw.dans.datavaultcli.command.ImportStatus;
 import nl.knaw.dans.datavaultcli.command.Layer;
+import nl.knaw.dans.datavaultcli.command.LayerArchive;
 import nl.knaw.dans.datavaultcli.command.LayerGetIds;
 import nl.knaw.dans.datavaultcli.command.LayerGetStatus;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
@@ -114,7 +115,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
             .addSubcommand(new CommandLine(new Layer())
                 .addSubcommand(new LayerNew(this))
                 .addSubcommand(new LayerGetIds(this))
-                .addSubcommand(new LayerGetStatus(this)))
+                .addSubcommand(new LayerGetStatus(this))
+                .addSubcommand(new LayerArchive(this)))
             .addSubcommand(new CopyBatch(this))
             .addSubcommand(new CommandLine(new ConsistencyCheck())
                 .addSubcommand(new ConsistencyCheckNew(this))
