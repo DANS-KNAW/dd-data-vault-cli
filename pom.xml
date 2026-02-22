@@ -15,7 +15,8 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -24,7 +25,7 @@
         <version>1.11.0</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <name>DD Data Vault CLI</name>
     <scm>
         <developerConnection>scm:git:ssh://github.com/DANS-KNAW/${project.artifactId}</developerConnection>
@@ -34,6 +35,7 @@
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.DataVaultCli</main-class>
         <command-name>data-vault</command-name>
+        <dd-data-vault-api.version>1.0.0-SNAPSHOT</dd-data-vault-api.version>
     </properties>
     <dependencies>
         <dependency>
@@ -134,7 +136,7 @@
                                 <apiPackage>nl.knaw.dans.datavaultcli.client</apiPackage>
                                 <modelPackage>nl.knaw.dans.datavaultcli.api</modelPackage>
                                 <invokerPackage>nl.knaw.dans.datavaultcli.client</invokerPackage>
-                                 <annotationLibrary>none</annotationLibrary>--&gt;
+                                <annotationLibrary>none</annotationLibrary>
                                 <library>jersey2</library>
                                 <openApiNullable>false</openApiNullable>
                             </configOptions>

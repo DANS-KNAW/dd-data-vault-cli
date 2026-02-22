@@ -15,48 +15,35 @@
  */
 package nl.knaw.dans.datavaultcli.command;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.Context;
-import nl.knaw.dans.datavaultcli.api.ImportCommandDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-@Command(name = "start",
+@Command(name = "archive",
          mixinStandardHelpOptions = true,
-         description = "Start a job.")
+         description = "Request archiving of a layer by id.")
 @RequiredArgsConstructor
-public class ImportStart implements Callable<Integer> {
+public class LayerArchive implements Callable<Integer> {
     private final Context context;
 
-    @Parameters(index = "0",
-                paramLabel = "path",
-                description = "The path to the object or batch of objects to import.")
-    private String path;
-
-    @Option(names = { "-s", "--single-object" },
-            description = "The path parameter points to a single object import directory (by default path points to a batch directory).")
-    private boolean singleObject;
+    @Parameters(index = "0", paramLabel = "ID", description = "Layer id (long)")
+    private Long layerId;
 
     @Override
     public Integer call() {
         try {
-            Path batchDir = Paths.get(this.path);
-            var importJob = context.getApi().importsPost(new ImportCommandDto()
-                .path(Path.of(batchDir.toString()).toAbsolutePath().toString())
-                .singleObject(singleObject));
-            System.err.println("Submitted import job: " + context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(importJob));
+            context.getApi().layersIdArchivePost(layerId);
+            System.out.println("Archive request accepted for layer id: " + layerId);
             return 0;
         }
-        catch (ApiException | JsonProcessingException e) {
+        catch (ApiException e) {
             System.err.println("Error: " + e.getMessage());
             return 1;
         }
     }
 }
+
