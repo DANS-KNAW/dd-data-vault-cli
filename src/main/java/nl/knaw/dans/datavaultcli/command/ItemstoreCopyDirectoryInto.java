@@ -23,6 +23,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Parameters;
 
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(name = "copy-directory-into",
@@ -44,11 +45,12 @@ public class ItemstoreCopyDirectoryInto implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
+            var absoluteSource = Paths.get(source).toAbsolutePath().normalize().toString();
             var request = new CopyDirectoryIntoRequestDto();
-            request.setSource(source);
+            request.setSource(absoluteSource);
             request.setDestination(destination);
             context.getApi().itemstoreCopyDirectoryIntoPost(request);
-            System.err.println("Copied " + source + " to " + destination + " in respository");
+            System.err.println("Copied " + absoluteSource + " to " + destination + " in respository");
             return 0;
         }
         catch (ApiException e) {
