@@ -31,6 +31,12 @@ import nl.knaw.dans.datavaultcli.command.ImportStart;
 import nl.knaw.dans.datavaultcli.command.ImportStatus;
 import nl.knaw.dans.datavaultcli.command.Layer;
 import nl.knaw.dans.datavaultcli.command.LayerArchive;
+import nl.knaw.dans.datavaultcli.command.Itemstore;
+import nl.knaw.dans.datavaultcli.command.ItemstoreCopyDirectoryInto;
+import nl.knaw.dans.datavaultcli.command.ItemstoreCopyFileTo;
+import nl.knaw.dans.datavaultcli.command.ItemstoreCreateDirectory;
+import nl.knaw.dans.datavaultcli.command.ItemstoreDeleteDirectory;
+import nl.knaw.dans.datavaultcli.command.ItemstoreDeleteFile;
 import nl.knaw.dans.datavaultcli.command.LayerGetIds;
 import nl.knaw.dans.datavaultcli.command.LayerGetStatus;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
@@ -117,6 +123,12 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new LayerGetIds(this))
                 .addSubcommand(new LayerGetStatus(this))
                 .addSubcommand(new LayerArchive(this)))
+            .addSubcommand(new CommandLine(new Itemstore(this))
+                .addSubcommand(new ItemstoreCreateDirectory(this))
+                .addSubcommand(new ItemstoreDeleteDirectory(this))
+                .addSubcommand(new ItemstoreDeleteFile(this))
+                .addSubcommand(new ItemstoreCopyDirectoryInto(this))
+                .addSubcommand(new ItemstoreCopyFileTo(this)))
             .addSubcommand(new CopyBatch(this))
             .addSubcommand(new CommandLine(new ConsistencyCheck())
                 .addSubcommand(new ConsistencyCheckNew(this))
