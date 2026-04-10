@@ -24,7 +24,7 @@
         <version>1.11.0</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
     <name>DD Data Vault CLI</name>
     <scm>
         <developerConnection>scm:git:ssh://github.com/DANS-KNAW/${project.artifactId}</developerConnection>
@@ -34,7 +34,8 @@
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.DataVaultCli</main-class>
         <command-name>data-vault</command-name>
-        <dd-data-vault-api.version>1.0.0</dd-data-vault-api.version>
+        <dd-data-vault-api.version>1.1.0</dd-data-vault-api.version>
+        <dans-java-utils.version>2.11.1</dans-java-utils.version>
     </properties>
     <dependencies>
         <dependency>
