@@ -23,7 +23,7 @@ import picocli.CommandLine.Parameters;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "describe",
+@Command(name = "describe-object",
          mixinStandardHelpOptions = true,
          description = "Get detailed overview of an OCFL object.")
 @RequiredArgsConstructor

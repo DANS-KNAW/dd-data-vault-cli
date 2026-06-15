@@ -23,11 +23,11 @@ import picocli.CommandLine.Parameters;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "get-inventory",
+@Command(name = "list-files",
          mixinStandardHelpOptions = true,
-         description = "Get the OCFL inventory at a specific version.")
+         description = "List files in a specific version of an OCFL object.")
 @RequiredArgsConstructor
-public class OcflGetInventory implements Callable<Integer> {
+public class OcflListFiles implements Callable<Integer> {
     private final Context context;
 
     @Parameters(index = "0", description = "The object ID.")
@@ -39,8 +39,8 @@ public class OcflGetInventory implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            var inventory = context.getOcflApi().ocflObjectsIdVersionsNrInventoryGet(id, version);
-            System.out.println(context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(inventory));
+            var files = context.getOcflApi().ocflObjectsIdVersionsNrFilesGet(id, version);
+            System.out.println(context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(files));
             return 0;
         }
         catch (Exception e) {

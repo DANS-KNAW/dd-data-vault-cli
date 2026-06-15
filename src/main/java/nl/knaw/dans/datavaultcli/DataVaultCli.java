@@ -45,7 +45,7 @@ import nl.knaw.dans.datavaultcli.command.LayerNew;
 import nl.knaw.dans.datavaultcli.command.Ocfl;
 import nl.knaw.dans.datavaultcli.command.OcflDescribeObject;
 import nl.knaw.dans.datavaultcli.command.OcflDescribeVersion;
-import nl.knaw.dans.datavaultcli.command.OcflGetInventory;
+import nl.knaw.dans.datavaultcli.command.OcflListFiles;
 import nl.knaw.dans.datavaultcli.command.OcflListObjects;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
@@ -160,7 +160,7 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new OcflListObjects(this))
                 .addSubcommand(new OcflDescribeObject(this))
                 .addSubcommand(new OcflDescribeVersion(this))
-                .addSubcommand(new OcflGetInventory(this)));
+                .addSubcommand(new OcflListFiles(this)));
     }
 
     private void fillStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {

@@ -23,7 +23,7 @@ import picocli.CommandLine.Option;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "list",
+@Command(name = "list-objects",
          mixinStandardHelpOptions = true,
          description = "List all OCFL object IDs.")
 @RequiredArgsConstructor
