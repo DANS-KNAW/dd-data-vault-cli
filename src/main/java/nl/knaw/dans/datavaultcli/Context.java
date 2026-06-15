@@ -17,11 +17,14 @@ package nl.knaw.dans.datavaultcli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
+import nl.knaw.dans.datavaultcli.client.OcflApi;
 import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
 
 public interface Context {
 
     DefaultApi getApi();
+
+    OcflApi getOcflApi();
 
     ImportAreaConfig getImportAreaConfig();
 
