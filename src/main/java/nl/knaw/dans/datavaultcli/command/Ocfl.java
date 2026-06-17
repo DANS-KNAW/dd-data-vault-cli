@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.datavaultcli;
+package nl.knaw.dans.datavaultcli.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.knaw.dans.datavaultcli.client.DefaultApi;
-import nl.knaw.dans.datavaultcli.client.OcflApi;
-import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
+import picocli.CommandLine.Command;
 
-public interface Context {
+import java.util.concurrent.Callable;
 
-    DefaultApi getApi();
+@Command(name = "ocfl",
+         mixinStandardHelpOptions = true,
+         description = "OCFL object operations.")
+public class Ocfl implements Callable<Integer> {
 
-    OcflApi getOcflApi();
-
-    ImportAreaConfig getImportAreaConfig();
-
-    ObjectMapper getObjectMapper();
-
+    @Override
+    public Integer call() throws Exception {
+        // The base command does nothing, it only serves as a container for subcommands.
+        return 0;
+    }
 }

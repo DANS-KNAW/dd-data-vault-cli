@@ -19,9 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
+import nl.knaw.dans.datavaultcli.client.OcflApi;
 import nl.knaw.dans.datavaultcli.command.ConsistencyCheck;
 import nl.knaw.dans.datavaultcli.command.ConsistencyCheckGet;
 import nl.knaw.dans.datavaultcli.command.ConsistencyCheckNew;
@@ -40,6 +42,11 @@ import nl.knaw.dans.datavaultcli.command.ItemstoreDeleteFile;
 import nl.knaw.dans.datavaultcli.command.LayerGetIds;
 import nl.knaw.dans.datavaultcli.command.LayerGetStatus;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
+import nl.knaw.dans.datavaultcli.command.Ocfl;
+import nl.knaw.dans.datavaultcli.command.OcflDescribeObject;
+import nl.knaw.dans.datavaultcli.command.OcflDescribeVersion;
+import nl.knaw.dans.datavaultcli.command.OcflListFiles;
+import nl.knaw.dans.datavaultcli.command.OcflListObjects;
 import nl.knaw.dans.datavaultcli.config.DataVaultConfiguration;
 import nl.knaw.dans.datavaultcli.config.ImportAreaConfig;
 import nl.knaw.dans.datavaultcli.config.StorageRootConfig;
@@ -70,7 +77,7 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
         return "Data Vault CLI";
     }
 
-    private Map<String, DefaultApi> storageRootsEndPoints;
+    private Map<String, ClientProxy> storageRootsEndPoints;
 
     private Map<String, ImportAreaConfig> importAreaConfigs;
 
@@ -81,16 +88,32 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
 
     @Override
     public DefaultApi getApi() {
+        return getClientProxy().getDefaultApi();
+    }
+
+    @Override
+    public OcflApi getOcflApi() {
+        return getClientProxy().getOcflApi();
+    }
+
+    private ClientProxy getClientProxy() {
         if (storageRootsEndPoints == null) {
-            throw new IllegalStateException("getApi() called before initialization.");
+            throw new IllegalStateException("getClientProxy() called before initialization.");
         }
 
-        var api = storageRootsEndPoints.get(this.storageRoot);
-        if (api == null) {
+        var clientProxy = storageRootsEndPoints.get(this.storageRoot);
+        if (clientProxy == null) {
             System.err.println("No storage root found for " + this.storageRoot);
             throw new IllegalArgumentException("No storage root found for " + this.storageRoot);
         }
-        return api;
+        return clientProxy;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class ClientProxy {
+        private final DefaultApi defaultApi;
+        private final OcflApi ocflApi;
     }
 
     @Override
@@ -132,17 +155,27 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
             .addSubcommand(new CopyBatch(this))
             .addSubcommand(new CommandLine(new ConsistencyCheck())
                 .addSubcommand(new ConsistencyCheckNew(this))
-                .addSubcommand(new ConsistencyCheckGet(this)));
+                .addSubcommand(new ConsistencyCheckGet(this)))
+            .addSubcommand(new CommandLine(new Ocfl())
+                .addSubcommand(new OcflListObjects(this))
+                .addSubcommand(new OcflDescribeObject(this))
+                .addSubcommand(new OcflDescribeVersion(this))
+                .addSubcommand(new OcflListFiles(this)));
     }
 
     private void fillStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {
         storageRootsEndPoints = storageRoots.entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> new ClientProxyBuilder<ApiClient, DefaultApi>()
-                .apiClient(new ApiClient())
-                .basePath(e.getValue().getDataVaultService().getUrl())
-                .httpClient(e.getValue().getDataVaultService().getHttpClient())
-                .defaultApiCtor(DefaultApi::new)
-                .build()));
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                var apiClient = new ApiClient();
+                var defaultApi = new ClientProxyBuilder<ApiClient, DefaultApi>()
+                    .apiClient(apiClient)
+                    .basePath(e.getValue().getDataVaultService().getUrl())
+                    .httpClient(e.getValue().getDataVaultService().getHttpClient())
+                    .defaultApiCtor(DefaultApi::new)
+                    .build();
+                var ocflApi = new OcflApi(apiClient);
+                return new ClientProxy(defaultApi, ocflApi);
+            }));
     }
 
     private void fillImportAreaConfigs(Map<String, StorageRootConfig> storageRoots) {
