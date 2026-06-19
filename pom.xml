@@ -34,7 +34,7 @@
     <properties>
         <main-class>nl.knaw.dans.datavaultcli.DataVaultCli</main-class>
         <command-name>data-vault</command-name>
-        <dd-data-vault-api.version>1.2.0</dd-data-vault-api.version>
+        <dd-data-vault-api.version>1.3.0-SNAPSHOT</dd-data-vault-api.version>
         <dans-java-utils.version>2.11.1</dans-java-utils.version>
     </properties>
     <dependencies>
@@ -93,6 +93,21 @@
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
