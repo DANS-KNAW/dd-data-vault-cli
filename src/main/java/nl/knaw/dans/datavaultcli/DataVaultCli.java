@@ -170,14 +170,18 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
     private void fillStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {
         storageRootsEndPoints = storageRoots.entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, e -> {
-                var apiClient = new ApiClient();
                 var defaultApi = new ClientProxyBuilder<ApiClient, DefaultApi>()
-                    .apiClient(apiClient)
+                    .apiClientCtor(ApiClient::new)
                     .basePath(e.getValue().getDataVaultService().getUrl())
                     .httpClient(e.getValue().getDataVaultService().getHttpClient())
-                    .defaultApiCtor(DefaultApi::new)
+                    .proxyCtor(DefaultApi::new)
                     .build();
-                var ocflApi = new OcflApi(apiClient);
+                var ocflApi = new ClientProxyBuilder<ApiClient, OcflApi>()
+                    .apiClientCtor(ApiClient::new)
+                    .basePath(e.getValue().getDataVaultService().getUrl())
+                    .httpClient(e.getValue().getDataVaultService().getHttpClient())
+                    .proxyCtor(OcflApi::new)
+                    .build();
                 return new ClientProxy(defaultApi, ocflApi);
             }));
     }
