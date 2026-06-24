@@ -43,7 +43,7 @@ public class OcflGetExtensionFile implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            var file = context.getOcflApi().ocflObjectsIdExtensionFilesPathGet(id, path);
+            var file = context.getOcflApi().ocflObjectsIdExtensionFileGet(id, path);
 
             if ("-".equals(destination)) {
                 FileUtils.copyFile(file, System.out);

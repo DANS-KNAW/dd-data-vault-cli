@@ -58,7 +58,7 @@ class OcflGetExtensionFileTest {
     void call_should_print_to_stdout_when_destination_is_dash() throws Exception {
         var tempFile = Files.createTempFile("test-ext", ".txt").toFile();
         FileUtils.writeStringToFile(tempFile, "extension content", "UTF-8");
-        when(ocflApi.ocflObjectsIdExtensionFilesPathGet(anyString(), anyString())).thenReturn(tempFile);
+        when(ocflApi.ocflObjectsIdExtensionFileGet(anyString(), anyString())).thenReturn(tempFile);
 
         var command = new OcflGetExtensionFile(context);
         setField(command, "id", "obj1");
@@ -76,7 +76,7 @@ class OcflGetExtensionFileTest {
     void call_should_save_to_file_when_destination_is_path() throws Exception {
         var tempFile = Files.createTempFile("test-ext", ".txt").toFile();
         FileUtils.writeStringToFile(tempFile, "extension content", "UTF-8");
-        when(ocflApi.ocflObjectsIdExtensionFilesPathGet(anyString(), anyString())).thenReturn(tempFile);
+        when(ocflApi.ocflObjectsIdExtensionFileGet(anyString(), anyString())).thenReturn(tempFile);
 
         var destination = Files.createTempFile("dest", ".txt");
         Files.deleteIfExists(destination);
