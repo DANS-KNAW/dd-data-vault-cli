@@ -36,6 +36,7 @@ import nl.knaw.dans.datavaultcli.command.LayerArchive;
 import nl.knaw.dans.datavaultcli.command.Itemstore;
 import nl.knaw.dans.datavaultcli.command.ItemstoreCopyDirectoryInto;
 import nl.knaw.dans.datavaultcli.command.ItemstoreCopyFileInto;
+import nl.knaw.dans.datavaultcli.command.ItemstoreCopyFileOutOf;
 import nl.knaw.dans.datavaultcli.command.ItemstoreCreateDirectory;
 import nl.knaw.dans.datavaultcli.command.ItemstoreDeleteDirectory;
 import nl.knaw.dans.datavaultcli.command.ItemstoreDeleteFile;
@@ -153,7 +154,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new ItemstoreDeleteDirectory(this))
                 .addSubcommand(new ItemstoreDeleteFile(this))
                 .addSubcommand(new ItemstoreCopyDirectoryInto(this))
-                .addSubcommand(new ItemstoreCopyFileInto(this)))
+                .addSubcommand(new ItemstoreCopyFileInto(this))
+                .addSubcommand(new ItemstoreCopyFileOutOf(this)))
             .addSubcommand(new CopyBatch(this))
             .addSubcommand(new CommandLine(new ConsistencyCheck())
                 .addSubcommand(new ConsistencyCheckNew(this))

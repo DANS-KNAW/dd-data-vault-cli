@@ -17,7 +17,7 @@ package nl.knaw.dans.datavaultcli.command;
 
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.Context;
-import nl.knaw.dans.datavaultcli.api.CopyFileToRequestDto;
+import nl.knaw.dans.datavaultcli.api.CopyFileFromRequestDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -26,31 +26,31 @@ import picocli.CommandLine.ParentCommand;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-@Command(name = "copy-file-into",
+@Command(name = "copy-file-out-of",
          mixinStandardHelpOptions = true,
-         description = "Copy a file into the item store. N.B. the second argument is the target location of the file itself, not of its parent directory!")
+         description = "Copy a file out of the item store.")
 @RequiredArgsConstructor
-public class ItemstoreCopyFileInto implements Callable<Integer> {
+public class ItemstoreCopyFileOutOf implements Callable<Integer> {
     private final Context context;
 
     @ParentCommand
     private Itemstore parent;
 
-    @Parameters(index = "0", description = "The source file path.")
+    @Parameters(index = "0", description = "The source path in the item store.")
     private String source;
 
-    @Parameters(index = "1", description = "The destination path in the item store.")
+    @Parameters(index = "1", description = "The destination file path.")
     private String destination;
 
     @Override
     public Integer call() {
         try {
-            var absoluteSource = Paths.get(source).toAbsolutePath().normalize().toString();
-            var request = new CopyFileToRequestDto();
-            request.setSource(absoluteSource);
-            request.setDestination(destination);
-            context.getApi().itemstoreCopyFileIntoPost(request);
-            System.err.println("Copied " + absoluteSource + " to " + destination + " in respository");
+            var absoluteDestination = Paths.get(destination).toAbsolutePath().normalize().toString();
+            var request = new CopyFileFromRequestDto();
+            request.setSource(source);
+            request.setDestination(absoluteDestination);
+            context.getApi().itemstoreCopyFileOutOfPost(request);
+            System.err.println("Copied " + source + " from respository to " + absoluteDestination);
             return 0;
         }
         catch (ApiException e) {
