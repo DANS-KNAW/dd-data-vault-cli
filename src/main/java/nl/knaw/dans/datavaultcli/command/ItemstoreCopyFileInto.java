@@ -20,17 +20,17 @@ import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.api.CopyFileToRequestDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-@Command(name = "copy-file-to",
+@Command(name = "copy-file-into",
          mixinStandardHelpOptions = true,
-         description = "Copy a file into the item store.")
+         description = "Copy a file into the item store. N.B. the second argument is the target location of the file itself, not of its parent directory!")
 @RequiredArgsConstructor
-public class ItemstoreCopyFileTo implements Callable<Integer> {
+public class ItemstoreCopyFileInto implements Callable<Integer> {
     private final Context context;
 
     @ParentCommand
