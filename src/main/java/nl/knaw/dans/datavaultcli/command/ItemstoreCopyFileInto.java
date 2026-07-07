@@ -17,7 +17,7 @@ package nl.knaw.dans.datavaultcli.command;
 
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.Context;
-import nl.knaw.dans.datavaultcli.api.CopyFileToRequestDto;
+import nl.knaw.dans.datavaultcli.api.CopyFileIntoRequestDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -46,7 +46,7 @@ public class ItemstoreCopyFileInto implements Callable<Integer> {
     public Integer call() {
         try {
             var absoluteSource = Paths.get(source).toAbsolutePath().normalize().toString();
-            var request = new CopyFileToRequestDto();
+            var request = new CopyFileIntoRequestDto();
             request.setSource(absoluteSource);
             request.setDestination(destination);
             context.getApi().itemstoreCopyFileIntoPost(request);

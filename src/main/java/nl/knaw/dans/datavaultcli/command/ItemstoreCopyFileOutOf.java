@@ -17,7 +17,7 @@ package nl.knaw.dans.datavaultcli.command;
 
 import lombok.RequiredArgsConstructor;
 import nl.knaw.dans.datavaultcli.Context;
-import nl.knaw.dans.datavaultcli.api.CopyFileFromRequestDto;
+import nl.knaw.dans.datavaultcli.api.CopyFileOutOfRequestDto;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -46,7 +46,7 @@ public class ItemstoreCopyFileOutOf implements Callable<Integer> {
     public Integer call() {
         try {
             var absoluteDestination = Paths.get(destination).toAbsolutePath().normalize().toString();
-            var request = new CopyFileFromRequestDto();
+            var request = new CopyFileOutOfRequestDto();
             request.setSource(source);
             request.setDestination(absoluteDestination);
             context.getApi().itemstoreCopyFileOutOfPost(request);
