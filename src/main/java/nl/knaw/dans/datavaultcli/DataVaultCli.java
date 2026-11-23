@@ -45,9 +45,11 @@ import nl.knaw.dans.datavaultcli.command.LayerGetIds;
 import nl.knaw.dans.datavaultcli.command.LayerGetStatus;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
 import nl.knaw.dans.datavaultcli.command.Ocfl;
+import nl.knaw.dans.datavaultcli.command.OcflClearObjectBlock;
 import nl.knaw.dans.datavaultcli.command.OcflDescribeObject;
 import nl.knaw.dans.datavaultcli.command.OcflDescribeVersion;
 import nl.knaw.dans.datavaultcli.command.OcflGetExtensionFile;
+import nl.knaw.dans.datavaultcli.command.OcflIsObjectBlocked;
 import nl.knaw.dans.datavaultcli.command.OcflListExtensionFiles;
 import nl.knaw.dans.datavaultcli.command.OcflListFiles;
 import nl.knaw.dans.datavaultcli.command.OcflListObjects;
@@ -164,6 +166,8 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new ConsistencyCheckGet(this)))
             .addSubcommand(new CommandLine(new Ocfl())
                 .addSubcommand(new OcflListObjects(this))
+                .addSubcommand(new OcflIsObjectBlocked(this))
+                .addSubcommand(new OcflClearObjectBlock(this))
                 .addSubcommand(new OcflDescribeObject(this))
                 .addSubcommand(new OcflDescribeVersion(this))
                 .addSubcommand(new OcflListFiles(this))
