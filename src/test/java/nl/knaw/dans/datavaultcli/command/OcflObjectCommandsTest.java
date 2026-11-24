@@ -16,7 +16,9 @@
 package nl.knaw.dans.datavaultcli.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpServer;
 import nl.knaw.dans.datavaultcli.Context;
+import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import nl.knaw.dans.datavaultcli.client.OcflApi;
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,11 +111,44 @@ class OcflObjectCommandsTest {
     @Test
     void block_commands_accept_argument_and_stdin() throws Exception {
         when(api.ocflObjectsIdBlockedGet("id1")).thenReturn(true);
-        when(api.ocflObjectsIdBlockedDelete("id2")).thenReturn(false);
+        when(api.ocflObjectsIdBlockedGet("id3")).thenReturn(false);
         assertThat(new CommandLine(new OcflIsObjectBlocked(context)).execute("id1")).isZero();
+        assertThat(new CommandLine(new OcflIsObjectBlocked(context)).execute("id3")).isZero();
         System.setIn(new ByteArrayInputStream("id2\n".getBytes(StandardCharsets.UTF_8)));
         assertThat(new CommandLine(new OcflClearObjectBlock(context)).execute("-")).isZero();
+        assertThat(new CommandLine(new OcflClearObjectBlock(context)).execute("id4")).isZero();
         assertThat(output.toString()).isEqualTo("true\nfalse\n");
+        assertThat(errors.toString()).isEqualTo("Object is unblocked: id2\nObject is unblocked: id4\n");
+        verify(api).ocflObjectsIdBlockedDelete("id2");
+        verify(api).ocflObjectsIdBlockedDelete("id4");
+    }
+
+    @Test
+    void generated_client_accepts_no_content_response() throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/ocfl/objects/id/blocked", exchange -> {
+            if (exchange.getRequestMethod().equals("DELETE")) {
+                exchange.sendResponseHeaders(204, -1);
+            }
+            else {
+                exchange.sendResponseHeaders(405, -1);
+            }
+            exchange.close();
+        });
+        server.start();
+        try {
+            var client = new ApiClient();
+            client.setBasePath("http://127.0.0.1:" + server.getAddress().getPort());
+            var realApi = new OcflApi();
+            realApi.setApiClient(client);
+            when(context.getOcflApi()).thenReturn(realApi);
+            assertThat(new CommandLine(new OcflClearObjectBlock(context)).execute("id")).isZero();
+            assertThat(output.toString()).isEmpty();
+            assertThat(errors.toString()).isEqualTo("Object is unblocked: id\n");
+        }
+        finally {
+            server.stop(0);
+        }
     }
 
     @Test
@@ -124,5 +160,9 @@ class OcflObjectCommandsTest {
         System.setIn(new ByteArrayInputStream(new byte[0]));
         assertThat(new CommandLine(new OcflClearObjectBlock(context)).execute()).isEqualTo(1);
         assertThat(errors.toString()).contains("Object ID is required");
+        doThrow(new ApiException("clear failed")).when(api).ocflObjectsIdBlockedDelete("missing");
+        assertThat(new CommandLine(new OcflClearObjectBlock(context)).execute("missing")).isEqualTo(1);
+        assertThat(output.toString()).isEmpty();
+        assertThat(errors.toString()).contains("clear failed").doesNotContain("Object is unblocked");
     }
 }

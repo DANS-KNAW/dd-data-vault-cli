@@ -25,7 +25,8 @@ public class OcflClearObjectBlock extends OcflObjectBlockCommand {
     }
 
     @Override
-    Boolean execute(String objectId) throws Exception {
-        return context.getOcflApi().ocflObjectsIdBlockedDelete(objectId);
+    void execute(String objectId) throws Exception {
+        context.getOcflApi().ocflObjectsIdBlockedDelete(objectId);
+        System.err.println("Object is unblocked: " + objectId);
     }
 }

@@ -17,7 +17,9 @@ Both commands output all job attributes by default. Use `--short` for objects co
 
 `data-vault -r ROOT ocfl list-objects` returns a JSON array of object IDs, fetching every page by default. By default it includes both blocked and unblocked, and both ingested and uningested objects. Use `--blocked` or `--unblocked` to filter by block status, and independently use `--ingested` or `--uningested` to filter by ingestion status. The options within each pair are mutually exclusive. Supplying `--limit` or `--offset` returns only one page; the defaults are 100 and 0 respectively.
 
-`data-vault -r ROOT ocfl is-object-blocked ID` prints the blocked status as a JSON boolean. `data-vault -r ROOT ocfl clear-object-block ID` clears the block and prints the resulting status. Either command accepts `-` or an omitted ID to read one ID from standard input. Errors are written to standard error and return a nonzero exit status.
+`data-vault -r ROOT ocfl is-object-blocked ID` prints the blocked status as a JSON boolean on standard output. `data-vault -r ROOT ocfl clear-object-block ID` clears the block and writes `Object is unblocked: ID` to standard error, with no standard output. Either command accepts `-` or an omitted ID to read one ID from standard input. Errors are written to standard error and return a nonzero exit status.
+
+This changes the clear command's former `false` standard output; scripts must use its exit status instead. The service now returns `204` without a body instead of `200` with JSON `false`, so API clients must be updated or regenerated and deployed with the compatible service.
 
 These commands require a service implementing the `2.1.2-SNAPSHOT` API contract; the snapshot API artifact must be available to build the CLI.
 

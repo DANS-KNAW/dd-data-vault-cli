@@ -33,7 +33,7 @@ abstract class OcflObjectBlockCommand implements Callable<Integer> {
         this.context = context;
     }
 
-    abstract Boolean execute(String objectId) throws Exception;
+    abstract void execute(String objectId) throws Exception;
 
     @Override
     public Integer call() {
@@ -45,7 +45,7 @@ abstract class OcflObjectBlockCommand implements Callable<Integer> {
             if (objectId == null || objectId.isBlank()) {
                 throw new IllegalArgumentException("Object ID is required");
             }
-            System.out.println(execute(objectId));
+            execute(objectId);
             return 0;
         }
         catch (Exception e) {

@@ -25,7 +25,7 @@ public class OcflIsObjectBlocked extends OcflObjectBlockCommand {
     }
 
     @Override
-    Boolean execute(String objectId) throws Exception {
-        return context.getOcflApi().ocflObjectsIdBlockedGet(objectId);
+    void execute(String objectId) throws Exception {
+        System.out.println(context.getOcflApi().ocflObjectsIdBlockedGet(objectId));
     }
 }
