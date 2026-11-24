@@ -38,17 +38,25 @@ public class OcflListObjects implements Callable<Integer> {
     private Integer offset;
 
     @ArgGroup(exclusive = true, multiplicity = "0..1")
-    private Filter filter;
+    private BlockedFilter blockedFilter;
 
-    static class Filter {
-        @Option(names = "--blocked", description = "List blocked objects, including uningested objects.")
+    @ArgGroup(exclusive = true, multiplicity = "0..1")
+    private IngestedFilter ingestedFilter;
+
+    static class BlockedFilter {
+        @Option(names = "--blocked", description = "List blocked objects.")
         boolean blocked;
 
-        @Option(names = "--unblocked", description = "List unblocked ingested objects.")
+        @Option(names = "--unblocked", description = "List unblocked objects.")
         boolean unblocked;
+    }
 
-        @Option(names = { "-all", "--all" }, description = "Include uningested objects.")
-        boolean all;
+    static class IngestedFilter {
+        @Option(names = "--ingested", description = "List ingested objects.")
+        boolean ingested;
+
+        @Option(names = "--uningested", description = "List uningested objects.")
+        boolean uningested;
     }
 
     @Override
@@ -59,11 +67,11 @@ public class OcflListObjects implements Callable<Integer> {
             if (pageSize <= 0 || pageOffset < 0) {
                 throw new IllegalArgumentException("limit must be positive and offset must be non-negative");
             }
-            Boolean blocked = filter == null || filter.all ? null : filter.blocked;
-            Boolean includeUningested = filter != null && filter.all ? true : null;
+            Boolean blocked = blockedFilter == null ? null : blockedFilter.blocked;
+            Boolean ingested = ingestedFilter == null ? null : ingestedFilter.ingested;
             var ids = new ArrayList<String>();
             while (true) {
-                var page = context.getOcflApi().ocflObjectsGet(pageSize, pageOffset, blocked, includeUningested);
+                var page = context.getOcflApi().ocflObjectsGet(pageSize, pageOffset, blocked, ingested);
                 ids.addAll(page);
                 if (limit != null || offset != null || page.size() < pageSize) {
                     break;

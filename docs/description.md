@@ -7,7 +7,7 @@ This package provides the `data-vault` command, to interact with the `dd-data-va
 
 ### OCFL objects
 
-`data-vault -r ROOT ocfl list-objects` returns a JSON array of all ingested object IDs, fetching every page by default. `--blocked` selects blocked objects (including uningested objects), `--unblocked` selects unblocked ingested objects, and `-all` or `--all` includes uningested objects without filtering by status. These options are mutually exclusive. Supplying `--limit` or `--offset` returns only one page; the defaults are 100 and 0 respectively.
+`data-vault -r ROOT ocfl list-objects` returns a JSON array of object IDs, fetching every page by default. By default it includes both blocked and unblocked, and both ingested and uningested objects. Use `--blocked` or `--unblocked` to filter by block status, and independently use `--ingested` or `--uningested` to filter by ingestion status. The options within each pair are mutually exclusive. Supplying `--limit` or `--offset` returns only one page; the defaults are 100 and 0 respectively.
 
 `data-vault -r ROOT ocfl is-object-blocked ID` prints the blocked status as a JSON boolean. `data-vault -r ROOT ocfl clear-object-block ID` clears the block and prints the resulting status. Either command accepts `-` or an omitted ID to read one ID from standard input. Errors are written to standard error and return a nonzero exit status.
 

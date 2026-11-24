@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,19 +71,36 @@ class OcflObjectCommandsTest {
 
     @Test
     void explicit_pagination_and_filters_are_forwarded() throws Exception {
-        when(api.ocflObjectsGet(5, 3, true, null)).thenReturn(List.of("id"));
-        assertThat(new CommandLine(new OcflListObjects(context)).execute("--blocked", "--limit", "5", "--offset", "3")).isZero();
-        verify(api).ocflObjectsGet(5, 3, true, null);
+        when(api.ocflObjectsGet(5, 3, true, false)).thenReturn(List.of("id"));
+        assertThat(new CommandLine(new OcflListObjects(context)).execute("--blocked", "--uningested", "--limit", "5", "--offset", "3")).isZero();
+        verify(api).ocflObjectsGet(5, 3, true, false);
         verifyNoMoreInteractions(api);
-        assertThat(new CommandLine(new OcflListObjects(context)).execute("--unblocked")).isZero();
-        verify(api).ocflObjectsGet(100, 0, false, null);
-        assertThat(new CommandLine(new OcflListObjects(context)).execute("-all")).isZero();
-        verify(api).ocflObjectsGet(100, 0, null, true);
     }
 
     @Test
-    void conflicting_filters_and_invalid_limit_fail() {
-        assertThat(new CommandLine(new OcflListObjects(context)).execute("--blocked", "--all")).isNotZero();
+    void filter_combinations_are_forwarded() throws Exception {
+        String[] blockedOptions = { null, "--blocked", "--unblocked" };
+        Boolean[] blockedValues = { null, true, false };
+        String[] ingestedOptions = { null, "--ingested", "--uningested" };
+        Boolean[] ingestedValues = { null, true, false };
+        for (int i = 0; i < blockedOptions.length; i++) {
+            for (int j = 0; j < ingestedOptions.length; j++) {
+                var args = new ArrayList<String>();
+                if (blockedOptions[i] != null) args.add(blockedOptions[i]);
+                if (ingestedOptions[j] != null) args.add(ingestedOptions[j]);
+                assertThat(new CommandLine(new OcflListObjects(context)).execute(args.toArray(new String[0]))).isZero();
+                verify(api).ocflObjectsGet(100, 0, blockedValues[i], ingestedValues[j]);
+            }
+        }
+        verifyNoMoreInteractions(api);
+    }
+
+    @Test
+    void conflicting_filters_removed_all_and_invalid_limit_fail() {
+        assertThat(new CommandLine(new OcflListObjects(context)).execute("--blocked", "--unblocked")).isNotZero();
+        assertThat(new CommandLine(new OcflListObjects(context)).execute("--ingested", "--uningested")).isNotZero();
+        assertThat(new CommandLine(new OcflListObjects(context)).execute("--all")).isNotZero();
+        assertThat(new CommandLine(new OcflListObjects(context)).execute("-all")).isNotZero();
         assertThat(new CommandLine(new OcflListObjects(context)).execute("--limit", "0")).isNotZero();
         verifyNoInteractions(api);
     }
