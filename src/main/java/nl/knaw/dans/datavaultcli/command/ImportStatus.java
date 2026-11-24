@@ -50,7 +50,7 @@ public class ImportStatus implements Callable<Integer> {
     public Integer call() {
         try {
             if (selection.all) {
-                var jobs = context.getApi().importsGet();
+                var jobs = context.getApi().importsGet(null, null, null, null);
                 System.err.println(context.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jobs));
                 return 0;
             }

@@ -5,6 +5,14 @@ This package provides the `data-vault` command, to interact with the `dd-data-va
 
 [REST API]: https://dans-knaw.github.io/dd-data-vault/swagger-ui/
 
+### Import jobs
+
+`data-vault -r ROOT import list` returns a JSON array of import jobs. Combine `--pending`, `--running`, `--success`, and `--failed` to select statuses; without flags all statuses are included. Use a positive `--limit` and optionally a nonnegative `--offset` to select a page; offset requires limit and defaults to zero. Results are ordered by creation time and job ID.
+
+`data-vault -r ROOT import find-by-batch BATCH` finds jobs for the exact batch path. The path may be relative to the server's configured `dataVault.ingest.inbox` or absolute within that inbox; paths outside it are rejected. Path normalization is lexical and does not resolve symlinks.
+
+Both commands output all job attributes by default. Use `--short` for objects containing only `uuid`, `batch`, and `status`. Empty results are `[]`; errors go to standard error and return a nonzero exit status.
+
 ### OCFL objects
 
 `data-vault -r ROOT ocfl list-objects` returns a JSON array of object IDs, fetching every page by default. By default it includes both blocked and unblocked, and both ingested and uningested objects. Use `--blocked` or `--unblocked` to filter by block status, and independently use `--ingested` or `--uningested` to filter by ingestion status. The options within each pair are mutually exclusive. Supplying `--limit` or `--offset` returns only one page; the defaults are 100 and 0 respectively.
