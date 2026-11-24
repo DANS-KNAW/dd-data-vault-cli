@@ -20,3 +20,7 @@ Both commands output all job attributes by default. Use `--short` for objects co
 `data-vault -r ROOT ocfl is-object-blocked ID` prints the blocked status as a JSON boolean. `data-vault -r ROOT ocfl clear-object-block ID` clears the block and prints the resulting status. Either command accepts `-` or an omitted ID to read one ID from standard input. Errors are written to standard error and return a nonzero exit status.
 
 These commands require a service implementing the `2.1.2-SNAPSHOT` API contract; the snapshot API artifact must be available to build the CLI.
+
+### Restaging failed imports
+
+Run `data-vault -r <root> import restage-failed <selector>` to restore failed object directories in the inbox without starting a new import job. The selector is an import job UUID or a batch path relative to or contained in the inbox. Prefix a UUID-shaped batch name with `./` to select it as a path. Missing or empty failed directories are no-ops; filesystem failures can leave a batch partially restaged. Messages and errors are written to stderr.
