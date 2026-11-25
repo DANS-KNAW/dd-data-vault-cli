@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.datavaultcli.command;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,6 @@ import nl.knaw.dans.datavaultcli.Context;
 import nl.knaw.dans.datavaultcli.client.ApiException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParentCommand;
 
 import java.util.concurrent.Callable;
 
@@ -40,7 +40,7 @@ public class LayerGetStatus implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            var mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
             var api = context.getApi();
 
             var response = "top".equalsIgnoreCase(idOrTop)
