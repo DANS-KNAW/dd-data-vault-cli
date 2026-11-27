@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.datavaultcli.client.ApiClient;
 import nl.knaw.dans.datavaultcli.client.DefaultApi;
+import nl.knaw.dans.datavaultcli.client.ObjectVersionPropertiesApi;
 import nl.knaw.dans.datavaultcli.client.OcflApi;
 import nl.knaw.dans.datavaultcli.command.ConsistencyCheck;
 import nl.knaw.dans.datavaultcli.command.ConsistencyCheckGet;
@@ -47,6 +48,10 @@ import nl.knaw.dans.datavaultcli.command.ItemstoreDeleteFile;
 import nl.knaw.dans.datavaultcli.command.LayerGetIds;
 import nl.knaw.dans.datavaultcli.command.LayerGetStatus;
 import nl.knaw.dans.datavaultcli.command.LayerNew;
+import nl.knaw.dans.datavaultcli.command.ObjectProperty;
+import nl.knaw.dans.datavaultcli.command.ObjectPropertyDelete;
+import nl.knaw.dans.datavaultcli.command.ObjectPropertyGet;
+import nl.knaw.dans.datavaultcli.command.ObjectPropertySet;
 import nl.knaw.dans.datavaultcli.command.Ocfl;
 import nl.knaw.dans.datavaultcli.command.OcflClearObjectBlock;
 import nl.knaw.dans.datavaultcli.command.OcflDescribeObject;
@@ -105,6 +110,11 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
         return getClientProxy().getOcflApi();
     }
 
+    @Override
+    public ObjectVersionPropertiesApi getObjectVersionPropertiesApi() {
+        return getClientProxy().getObjectVersionPropertiesApi();
+    }
+
     private ClientProxy getClientProxy() {
         if (storageRootsEndPoints == null) {
             throw new IllegalStateException("getClientProxy() called before initialization.");
@@ -123,6 +133,7 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
     private static class ClientProxy {
         private final DefaultApi defaultApi;
         private final OcflApi ocflApi;
+        private final ObjectVersionPropertiesApi objectVersionPropertiesApi;
     }
 
     @Override
@@ -178,7 +189,13 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                 .addSubcommand(new OcflDescribeVersion(this))
                 .addSubcommand(new OcflListFiles(this))
                 .addSubcommand(new OcflListExtensionFiles(this))
-                .addSubcommand(new OcflGetExtensionFile(this)));
+                .addSubcommand(new OcflGetExtensionFile(this)))
+            .addSubcommand(new CommandLine(new ObjectProperty())
+                .addSubcommand(new ObjectPropertyGet(this))
+                .addSubcommand(new ObjectPropertySet(this))
+                .addSubcommand(new ObjectPropertyDelete(this)));
+        // Arguments starting with '@' are taken literally, so that property values starting with '@' are not replaced by the contents of a file
+        commandLine.setExpandAtFiles(false);
     }
 
     private void fillStorageRootEndPoints(Map<String, StorageRootConfig> storageRoots) {
@@ -196,7 +213,13 @@ public class DataVaultCli extends AbstractCommandLineApp<DataVaultConfiguration>
                     .httpClient(e.getValue().getDataVaultService().getHttpClient())
                     .proxyCtor(OcflApi::new)
                     .build();
-                return new ClientProxy(defaultApi, ocflApi);
+                var objectVersionPropertiesApi = new ClientProxyBuilder<ApiClient, ObjectVersionPropertiesApi>()
+                    .apiClientCtor(ApiClient::new)
+                    .basePath(e.getValue().getDataVaultService().getUrl())
+                    .httpClient(e.getValue().getDataVaultService().getHttpClient())
+                    .proxyCtor(ObjectVersionPropertiesApi::new)
+                    .build();
+                return new ClientProxy(defaultApi, ocflApi, objectVersionPropertiesApi);
             }));
     }
 

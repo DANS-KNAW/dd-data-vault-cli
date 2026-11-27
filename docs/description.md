@@ -26,3 +26,45 @@ These commands require a service implementing the `2.1.2-SNAPSHOT` API contract;
 ### Restaging failed imports
 
 Run `data-vault -r <root> import restage-failed <selector>` to restore failed object directories in the inbox without starting a new import job. The selector is an import job UUID or a batch path relative to or contained in the inbox. Prefix a UUID-shaped batch name with `./` to select it as a path. Missing or empty failed directories are no-ops; filesystem failures can leave a batch partially restaged. Messages and errors are written to stderr.
+
+### Object version properties
+
+Object version properties are modifiable attributes of an OCFL object version, as defined by the [object-version-properties]{:target=_blank} extension. The
+`object-property` commands get and change them through the service, which validates every change against the property registry of the storage root before
+it is stored. The main use case is deaccessioning a dataset version.
+
+`data-vault -r ROOT object-property get -i ID [-v VERSION] [NAME]` prints the value of the property as JSON on standard output. Without `NAME` it prints all
+properties of the version. `VERSION` may be given as `1` or `v1` and defaults to `latest`.
+
+`data-vault -r ROOT object-property set -i ID -v VERSION NAME VALUE` adds the property or replaces its value. Use `--from-file FILE` instead of `VALUE` to
+read the value from a file; trailing whitespace, such as a final newline, is removed. A value is interpreted as follows:
+
+* A value that starts with `{` or `[` is parsed as JSON. If it is not valid JSON, the command fails before anything is sent to the service.
+* Any other value is taken as a string, so `1.0` is stored as the string `"1.0"`.
+* With `--json` every value is parsed as JSON. Use this for numbers and booleans, and quote strings: `'"foo"'`.
+
+`data-vault -r ROOT object-property set -f CSV_FILE` sets a batch of properties. The CSV file must have a header with the columns `OBJECT_ID`,
+`OBJECT_VERSION_NR`, `PROPERTY` and `VALUE`. Values are interpreted as above; `--from-file` cannot be used in this mode. Each row is set separately: a row
+that fails is reported on standard error and the remaining rows are still processed. The command returns a nonzero exit status if any row failed.
+
+`data-vault -r ROOT object-property delete -i ID -v VERSION NAME` removes the property from the version.
+
+The service refuses a change if the resulting properties of the version do not conform to the property registry: an unknown property, a value of the
+wrong type, a missing required sub-property, or the removal of a required property. The reason is printed on standard error. Note that the whole version is
+checked, so a version that already lacks a required property cannot be changed until that property is set. Properties are set per version: setting a
+property on version 1 does not change later versions.
+
+Example: deaccession version 1 of a dataset, and reaccession it again.
+
+```bash
+echo '{"datetime": "2026-08-04T14:37:52Z", "reason": "Invalid dataset" }' > details.txt
+data-vault -r ROOT object-property set --identifier urn:nbn:nl:ui:13-xxx --version 1 deaccessioned --from-file details.txt
+data-vault -r ROOT object-property delete --identifier urn:nbn:nl:ui:13-xxx --version 1 deaccessioned
+```
+
+!!! note "Values starting with `@`"
+
+    A value that starts with `@` is taken literally: `@details.txt` sets the value to the string `@details.txt`, it does not read the file. Use
+    `--from-file` to read a value from a file. (The `data-vault` command does not support picocli argument files.)
+
+[object-version-properties]: https://dans-knaw.github.io/dans-ocfl-extensions/object-version-properties/object-version-properties/
