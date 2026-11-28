@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Description - dd-data-vault-cli</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Description";
+        var mkdocs_page_input_path = "description.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> dd-data-vault-cli
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Manual</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Description</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#import-jobs">Import jobs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ocfl-objects">OCFL objects</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#restaging-failed-imports">Restaging failed imports</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#object-version-properties">Object version properties</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../context/">Context</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Development</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../dev/">Overview</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">dd-data-vault-cli</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Manual</li>
+      <li class="breadcrumb-item active">Description</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/DANS-KNAW/dd-data-vault-cli/edit/master/docs/description.md">Edit on DANS-KNAW/dd-data-vault-cli</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h1>
+<p>This package provides the <code>data-vault</code> command, to interact with the <code>dd-data-vault</code> service via its <a href="https://dans-knaw.github.io/dd-data-vault/swagger-ui/" target="_blank">REST API</a>.</p>
+<h3 id="import-jobs">Import jobs<a class="headerlink" href="#import-jobs" title="Permanent link">&para;</a></h3>
+<p><code>data-vault -r ROOT import list</code> returns a JSON array of import jobs. Combine <code>--pending</code>, <code>--running</code>, <code>--success</code>, and <code>--failed</code> to select statuses; without flags all statuses are included. Use a positive <code>--limit</code> and optionally a nonnegative <code>--offset</code> to select a page; offset requires limit and defaults to zero. Results are ordered by creation time and job ID.</p>
+<p><code>data-vault -r ROOT import find-by-batch BATCH</code> finds jobs for the exact batch path. The path may be relative to the server's configured <code>dataVault.ingest.inbox</code> or absolute within that inbox; paths outside it are rejected. Path normalization is lexical and does not resolve symlinks.</p>
+<p>Both commands output all job attributes by default. Use <code>--short</code> for objects containing only <code>uuid</code>, <code>batch</code>, and <code>status</code>. Empty results are <code>[]</code>; errors go to standard error and return a nonzero exit status.</p>
+<h3 id="ocfl-objects">OCFL objects<a class="headerlink" href="#ocfl-objects" title="Permanent link">&para;</a></h3>
+<p><code>data-vault -r ROOT ocfl list-objects</code> returns a JSON array of object IDs, fetching every page by default. By default it includes both blocked and unblocked, and both ingested and uningested objects. Use <code>--blocked</code> or <code>--unblocked</code> to filter by block status, and independently use <code>--ingested</code> or <code>--uningested</code> to filter by ingestion status. The options within each pair are mutually exclusive. Supplying <code>--limit</code> or <code>--offset</code> returns only one page; the defaults are 100 and 0 respectively.</p>
+<p><code>data-vault -r ROOT ocfl is-object-blocked ID</code> prints the blocked status as a JSON boolean on standard output. <code>data-vault -r ROOT ocfl clear-object-block ID</code> clears the block and writes <code>Object is unblocked: ID</code> to standard error, with no standard output. Either command accepts <code>-</code> or an omitted ID to read one ID from standard input. Errors are written to standard error and return a nonzero exit status.</p>
+<p>This changes the clear command's former <code>false</code> standard output; scripts must use its exit status instead. The service now returns <code>204</code> without a body instead of <code>200</code> with JSON <code>false</code>, so API clients must be updated or regenerated and deployed with the compatible service.</p>
+<p>These commands require a service implementing the <code>2.1.2-SNAPSHOT</code> API contract; the snapshot API artifact must be available to build the CLI.</p>
+<h3 id="restaging-failed-imports">Restaging failed imports<a class="headerlink" href="#restaging-failed-imports" title="Permanent link">&para;</a></h3>
+<p>Run <code>data-vault -r &lt;root&gt; import restage-failed &lt;selector&gt;</code> to restore failed object directories in the inbox without starting a new import job. The selector is an import job UUID or a batch path relative to or contained in the inbox. Prefix a UUID-shaped batch name with <code>./</code> to select it as a path. Missing or empty failed directories are no-ops; filesystem failures can leave a batch partially restaged. Messages and errors are written to stderr.</p>
+<h3 id="object-version-properties">Object version properties<a class="headerlink" href="#object-version-properties" title="Permanent link">&para;</a></h3>
+<p>Object version properties are modifiable attributes of an OCFL object version, as defined by the <a href="https://dans-knaw.github.io/dans-ocfl-extensions/object-version-properties/object-version-properties/" target="_blank">object-version-properties</a> extension. The
+<code>object-property</code> commands get and change them through the service, which validates every change against the property registry of the storage root before
+it is stored. The main use case is deaccessioning a dataset version.</p>
+<p><code>data-vault -r ROOT object-property get -i ID [-v VERSION] [NAME]</code> prints the value of the property as JSON on standard output. Without <code>NAME</code> it prints all
+properties of the version. <code>VERSION</code> may be given as <code>1</code> or <code>v1</code> and defaults to <code>latest</code>.</p>
+<p><code>data-vault -r ROOT object-property set -i ID -v VERSION NAME VALUE</code> adds the property or replaces its value. Use <code>--from-file FILE</code> instead of <code>VALUE</code> to
+read the value from a file; trailing whitespace, such as a final newline, is removed. A value is interpreted as follows:</p>
+<ul>
+<li>A value that starts with <code>{</code> or <code>[</code> is parsed as JSON. If it is not valid JSON, the command fails before anything is sent to the service.</li>
+<li>Any other value is taken as a string, so <code>1.0</code> is stored as the string <code>"1.0"</code>.</li>
+<li>With <code>--json</code> every value is parsed as JSON. Use this for numbers and booleans, and quote strings: <code>'"foo"'</code>.</li>
+</ul>
+<p><code>data-vault -r ROOT object-property set -f CSV_FILE</code> sets a batch of properties. The CSV file must have a header with the columns <code>OBJECT_ID</code>,
+<code>OBJECT_VERSION_NR</code>, <code>PROPERTY</code> and <code>VALUE</code>. Values are interpreted as above; <code>--from-file</code> cannot be used in this mode. Each row is set separately: a row
+that fails is reported on standard error and the remaining rows are still processed. The command returns a nonzero exit status if any row failed.</p>
+<p><code>data-vault -r ROOT object-property delete -i ID -v VERSION NAME</code> removes the property from the version.</p>
+<p>The service refuses a change if the resulting properties of the version do not conform to the property registry: an unknown property, a value of the
+wrong type, a missing required sub-property, or the removal of a required property. The reason is printed on standard error. Note that the whole version is
+checked, so a version that already lacks a required property cannot be changed until that property is set. Properties are set per version: setting a
+property on version 1 does not change later versions.</p>
+<p>Example: deaccession version 1 of a dataset, and reaccession it again.</p>
+<pre><code class="language-bash">echo '{&quot;datetime&quot;: &quot;2026-08-04T14:37:52Z&quot;, &quot;reason&quot;: &quot;Invalid dataset&quot; }' &gt; details.txt
+data-vault -r ROOT object-property set --identifier urn:nbn:nl:ui:13-xxx --version 1 deaccessioned --from-file details.txt
+data-vault -r ROOT object-property delete --identifier urn:nbn:nl:ui:13-xxx --version 1 deaccessioned
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Values starting with <code>@</code></p>
+<p>A value that starts with <code>@</code> is taken literally: <code>@details.txt</code> sets the value to the string <code>@details.txt</code>, it does not read the file. Use
+<code>--from-file</code> to read a value from a file. (The <code>data-vault</code> command does not support picocli argument files.)</p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/DANS-KNAW/dd-data-vault-cli" class="fa fa-code-fork" style="color: #fcfcfc"> DANS-KNAW/dd-data-vault-cli</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
