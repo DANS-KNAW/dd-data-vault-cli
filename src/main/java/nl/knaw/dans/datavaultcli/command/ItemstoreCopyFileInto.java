@@ -36,7 +36,7 @@ public class ItemstoreCopyFileInto implements Callable<Integer> {
     @ParentCommand
     private Itemstore parent;
 
-    @Parameters(index = "0", description = "The source file path.")
+    @Parameters(index = "0", description = "The source file path. Must be in the exchange directory of the service (dataVault.itemstore.exchangeDir).")
     private String source;
 
     @Parameters(index = "1", description = "The destination path in the item store.")
