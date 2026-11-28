@@ -25,12 +25,12 @@
         <version>4.0.1</version>
     </parent>
     <artifactId>dd-data-vault-cli</artifactId>
-    <version>4.8.0</version>
+    <version>4.8.1-SNAPSHOT</version>
     <name>DD Data Vault CLI</name>
     <scm>
         <connection>scm:git:https://github.com/DANS-KNAW/dd-data-vault-cli</connection>
         <developerConnection>scm:git:ssh://github.com/DANS-KNAW/dd-data-vault-cli</developerConnection>
-        <tag>v4.8.0</tag>
+        <tag>HEAD</tag>
         <url>https://github.com/DANS-KNAW/dd-data-vault-cli</url>
     </scm>
 
