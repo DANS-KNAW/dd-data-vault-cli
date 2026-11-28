@@ -39,7 +39,7 @@ public class ItemstoreCopyFileOutOf implements Callable<Integer> {
     @Parameters(index = "0", description = "The source path in the item store.")
     private String source;
 
-    @Parameters(index = "1", description = "The destination file path.")
+    @Parameters(index = "1", description = "The destination file path. Must be a new file in the exchange directory of the service (dataVault.itemstore.exchangeDir).")
     private String destination;
 
     @Override

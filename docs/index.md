@@ -21,6 +21,10 @@ data-vault -r <storageRoot> itemstore copy-file-to <source> <destination>
 data-vault -r <storageRoot> copy-batch <source> <target>
 data-vault -r <storageRoot> consistency-check new
 data-vault -r <storageRoot> consistency-check get <id>
+data-vault -r <storageRoot> object-property get { --identifier | -i } <id> [ { --version | -v } <version> ] [ <property-name> ]
+data-vault -r <storageRoot> object-property set { --identifier | -i } <id> { --version | -v } <version> <property-name> { <value> | --from-file <file> } [ --json ]
+data-vault -r <storageRoot> object-property set { --input-file | -f } <csv-file> [ --json ]
+data-vault -r <storageRoot> object-property delete { --identifier | -i } <id> { --version | -v } <version> <property-name>
 ```
 
 For more information on a subcommand use:
