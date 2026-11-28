@@ -25,11 +25,14 @@ import picocli.CommandLine.Parameters;
 import java.util.concurrent.Callable;
 
 @Command(name = "delete",
-         mixinStandardHelpOptions = true,
          description = "Delete an object version property. A property that is required by the property registry cannot be deleted.")
 @RequiredArgsConstructor
 public class ObjectPropertyDelete implements Callable<Integer> {
     private final Context context;
+
+    // Not mixinStandardHelpOptions: its --version would clash with the --version option for the object version, and picocli would then drop -h/--help as well
+    @Option(names = { "-h", "--help" }, usageHelp = true, description = "Show this help message and exit.")
+    private boolean help;
 
     @Option(names = { "-i", "--identifier" }, required = true, description = "The object ID.")
     private String id;

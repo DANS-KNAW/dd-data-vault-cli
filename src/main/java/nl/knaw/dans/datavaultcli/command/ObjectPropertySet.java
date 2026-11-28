@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(name = "set",
-         mixinStandardHelpOptions = true,
          description = {
              "Set an object version property, or a batch of properties from a CSV file. The new properties are validated against the property registry "
                  + "of the storage root before they are stored.",
@@ -61,6 +60,10 @@ public class ObjectPropertySet implements Callable<Integer> {
     static final String VALUE = "VALUE";
 
     private final Context context;
+
+    // Not mixinStandardHelpOptions: its --version would clash with the --version option for the object version, and picocli would then drop -h/--help as well
+    @Option(names = { "-h", "--help" }, usageHelp = true, description = "Show this help message and exit.")
+    private boolean help;
 
     @Spec
     private CommandSpec spec;

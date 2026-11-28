@@ -82,6 +82,18 @@ class ObjectPropertyCommandsTest {
     }
 
     @Test
+    void help_option_works_on_all_subcommands() {
+        for (var command : List.<Object> of(new ObjectPropertyGet(context), new ObjectPropertySet(context), new ObjectPropertyDelete(context))) {
+            output.reset();
+            assertThat(new CommandLine(command).execute("--help")).isZero();
+            assertThat(new CommandLine(command).execute("-h")).isZero();
+            assertThat(output.toString()).startsWith("Usage: ").contains("--version=<version>");
+        }
+        assertThat(errors.toString()).isEmpty();
+        verifyNoInteractions(api);
+    }
+
+    @Test
     void get_prints_single_property_as_json() throws Exception {
         when(api.objectVersionPropertiesIdNrNameGet("id", "1", "dataset-version")).thenReturn("1.0");
 

@@ -25,11 +25,14 @@ import picocli.CommandLine.Parameters;
 import java.util.concurrent.Callable;
 
 @Command(name = "get",
-         mixinStandardHelpOptions = true,
          description = "Print the value of an object version property as JSON, or all properties of the version if no property name is given.")
 @RequiredArgsConstructor
 public class ObjectPropertyGet implements Callable<Integer> {
     private final Context context;
+
+    // Not mixinStandardHelpOptions: its --version would clash with the --version option for the object version, and picocli would then drop -h/--help as well
+    @Option(names = { "-h", "--help" }, usageHelp = true, description = "Show this help message and exit.")
+    private boolean help;
 
     @Option(names = { "-i", "--identifier" }, required = true, description = "The object ID.")
     private String id;
